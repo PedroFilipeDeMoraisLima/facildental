@@ -1,0 +1,389 @@
+﻿@model gestaoclinica.Models.Prontuario
+
+<link rel="stylesheet" type="text/css" href="~/Content/css/Custom.css" />
+
+<h5>Prontuário do Paciente</h5>
+
+<hr />
+
+@{
+    if (TempData["MsgSucesso"] != null)
+    {
+        <div class="alert alert-success">
+            <a href="#" class="close" data-dismiss="alert">×</a>
+            @TempData["MsgSucesso"]
+        </div>
+    }
+
+    if (TempData["MsgErro"] != null)
+    {
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert">×</a>
+            @TempData["MsgErro"]
+        </div>
+    }
+}
+
+
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link active" id="nav-dados-tab" data-toggle="tab" href="#nav-dados" role="tab" aria-controls="nav-dados" aria-selected="true">Dados Cadastrais</a>
+        <a class="nav-item nav-link" id="nav-agendamento-tab" data-toggle="tab" href="#nav-agendamento" role="tab" aria-controls="nav-agendamento" aria-selected="false">Agendamentos</a>
+        <a class="nav-item nav-link" id="nav-anamnese-tab" data-toggle="tab" href="#nav-anamnese" role="tab" aria-controls="nav-anamnese" aria-selected="false">Anamnese</a>
+        <a class="nav-item nav-link" id="nav-evolucoes-tab" data-toggle="tab" href="#nav-evolucoes" role="tab" aria-controls="nav-evolucoes" aria-selected="false">Evoluções</a>
+        <a class="nav-item nav-link" id="nav-receituario-tab" data-toggle="tab" href="#nav-receituario" role="tab" aria-controls="nav-receituario" aria-selected="false">Receituário</a>
+        <a class="nav-item nav-link" id="nav-imagem-tab" data-toggle="tab" href="#nav-imagem" role="tab" aria-controls="nav-imagem" aria-selected="false">Imagens</a>
+    </div>
+</nav>
+
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-dados" role="tabpanel" aria-labelledby="nav-dados-tab">
+
+        <br />
+
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Paciente.Nome, "Nome *")
+                    @Html.TextBoxFor(model => model.Paciente.Nome, new { @class = "form-control", required = "required", @Value = ViewBag.Prontuario.Paciente.Nome })
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Paciente.CPF, "CPF *")
+                    @Html.TextBoxFor(model => model.Paciente.CPF, new { @class = "form-control", required = "required", @Value = ViewBag.Prontuario.Paciente.CPF })
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Paciente.RG, "RG *")
+                    @Html.TextBoxFor(model => model.Paciente.RG, new { @class = "form-control", required = "required", @Value = ViewBag.Prontuario.Paciente.RG })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Paciente.Sexo, "Sexo *") <br />
+
+                    @if (ViewBag.Prontuario.Paciente.Sexo == "M")
+                    {
+                        <label>Masculino</label> @Html.RadioButtonFor(model => model.Paciente.Sexo, value: "M", htmlAttributes: new { @checked = "true" })
+                    }
+                    else
+                    {
+                        <label>Masculino</label> @Html.RadioButtonFor(model => model.Paciente.Sexo, value: "M")
+                    }
+
+                    @if (ViewBag.Prontuario.Paciente.Sexo == "F")
+                    {
+                        <label>Feminino</label> @Html.RadioButtonFor(model => model.Paciente.Sexo, value: "F", htmlAttributes: new { @checked = "true" })
+                    }
+                    else
+                    {
+                        <label>Feminino</label> @Html.RadioButtonFor(model => model.Paciente.Sexo, value: "F")
+                    }
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Paciente.DataNascimento, "Nascimento *")
+
+                    @Html.TextBoxFor(model => model.Paciente.DataNascimento, new { @class = "form-control", required = "required", @Value = ViewBag.Prontuario.Paciente.DataNascimento.ToString("dd/MM/yyyy") })
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Paciente.Email, "Email *")
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-envelope"></i></span>
+                        </div>
+                        @Html.TextBoxFor(model => model.Paciente.Email, new { @class = "form-control", @type = "email", @Value = ViewBag.Prontuario.Paciente.Email })
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Paciente.Celular, "Celular *")
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-phone"></i></span>
+                        </div>
+                        @Html.TextBoxFor(model => model.Paciente.Celular, new { @class = "form-control", required = "required", @Value = ViewBag.Prontuario.Paciente.Celular })
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Paciente.TelefoneComercial, "Comercial")
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-phone"></i></span>
+                        </div>
+                        @Html.TextBoxFor(model => model.Paciente.TelefoneComercial, new { @class = "form-control", @Value = ViewBag.Prontuario.Paciente.TelefoneComercial })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.Label("UF")
+                    @Html.TextBox("UF", null, new { @Value = ViewBag.UFPaciente.Sigla + " (" + ViewBag.UFPaciente.Descricao + ")", @class = "form-control" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Paciente.CodigoCidade, "Cidade")
+                    @Html.TextBoxFor(model => model.Paciente.CodigoCidade, new { @class = "form-control", @Value = ViewBag.CidadePaciente.Descricao })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Paciente.Endereco)
+                    @Html.TextBoxFor(model => model.Paciente.Endereco, new { @class = "form-control", @Value = ViewBag.Prontuario.Paciente.Endereco })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Paciente.Bairro)
+                    @Html.TextBoxFor(model => model.Paciente.Bairro, new { @class = "form-control", @Value = ViewBag.Prontuario.Paciente.Bairro })
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Paciente.NumeroEndereco, "Número")
+                    @Html.TextBoxFor(model => model.Paciente.NumeroEndereco, new { @class = "form-control", @Value = ViewBag.Prontuario.Paciente.NumeroEndereco })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Paciente.ComplementoEndereco, "Complemento")
+                    @Html.TextBoxFor(model => model.Paciente.ComplementoEndereco, new { @class = "form-control", @Value = ViewBag.Prontuario.Paciente.ComplementoEndereco })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="nav-agendamento" role="tabpanel" aria-labelledby="nav-agendamento-tab">
+
+        <br />
+
+        <div class="table-responsive">
+            <table class="table table-hover" id="tbAgendamentos">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Tratamento</th>
+                        <th scope="col">Início</th>
+                        <th scope="col">Fim</th>
+                        <th scope="col">Status</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        foreach (gestaoclinica.Models.Agenda Agenda in ViewBag.Prontuario.Paciente.Agendamentos)
+                        {
+                            <tr>
+                                <th scope="row" data-id=@Agenda.Codigo>@Agenda.Codigo</th>
+                                <td>@Agenda.Tratamento.DescricaoComValor</td>
+                                <td>@Agenda.DataHoraInicial.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                <td>@Agenda.DataHoraFinal.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                <td>@Agenda.Status</td>
+                                <td class="text-left">
+                                    @{
+                                        if (Agenda.Status.Equals("Agendado")) 
+                                        {
+                                            <div class="farol farol-amarelo"></div>
+                                        }
+                                        else if (Agenda.Status.Equals("Atendido"))
+                                        {
+                                            <div class="farol farol-verde"></div>
+                                        }
+                                        else
+                                        {
+                                            <div class="farol farol-vermelho"></div>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="nav-anamnese" role="tabpanel" aria-labelledby="nav-anamnese-tab">
+        <br />
+        <button type="button" class="btn btn-primary btn-sm" onclick="location.href='@Url.Action("Cadastro", "Paciente")'"><i class="fas fa-plus"></i>&nbsp;Nova Anamnese</button>
+    </div>
+    <div class="tab-pane fade" id="nav-evolucoes" role="tabpanel" aria-labelledby="nav-evolucoes-tab">
+        <br />
+        <button type="button" class="btn btn-primary btn-sm" id="btnNovaEvolucao"><i class="fas fa-plus"></i>&nbsp;Nova Evolução</button>
+
+        <hr />
+
+        @{
+            <div class="accordion" id="accordionEvolucao">
+                @foreach (gestaoclinica.Models.Evolucao EvolucaoPaciente in ViewBag.Prontuario.Evolucoes)
+                {
+                    <div class="card">
+                        <div class="card-header" id='ev-@EvolucaoPaciente.Codigo'>
+                            <h2 class="mb-0">
+                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target='#collapse-ev-@EvolucaoPaciente.Codigo' aria-expanded="true" aria-controls='collaps-ev-@EvolucaoPaciente.Codigo'>
+                                    Evolução do dia @EvolucaoPaciente.DataHoraEvolucao.ToString("dd/MM/yyyy HH:mm") realizada por @EvolucaoPaciente.Profissional.Nome
+                                </button>
+                            </h2>
+                        </div>
+
+                        @{
+                            <div id='collapse-ev-@EvolucaoPaciente.Codigo' class="collapse" aria-labelledby='heading-ev-@EvolucaoPaciente.Codigo' data-parent="#accordionEvolucao">
+                                <div class="card-body">
+                                    @EvolucaoPaciente.Descricao
+                                </div>
+                            </div>
+                        }
+
+                    </div>
+                }
+
+            </div>
+        }
+                    
+    </div>
+    
+    <div class="tab-pane fade" id="nav-receituario" role="tabpanel" aria-labelledby="nav-receituario-tab">
+        <br />
+        <button type="button" class="btn btn-primary btn-sm" onclick="location.href='@Url.Action("Cadastro", "Paciente")'"><i class="fas fa-plus"></i>&nbsp;Nova Receita</button>
+    </div>
+    <div class="tab-pane fade" id="nav-imagem" role="tabpanel" aria-labelledby="nav-imagem-tab">
+
+    </div>
+</div>
+
+<hr />
+
+<a class="btn btn-secondary text-white btn-sm" onclick="location.href='@Url.Action("Index", "Prontuario")'">Voltar</a>
+
+<div class="modal" id="cadastroEvolucao" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Evolução do Paciente</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            @using (Html.BeginForm("CadastrarEvolucao", "Prontuario", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken();
+                <input type="hidden" name="CodigoProntuarioEvolucao" value=@ViewBag.Prontuario.Paciente.Codigo />
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-8">
+                            @Html.Label("Profissional")
+                            @Html.TextBox("ProfissionalEvolucao", null, new { @class = "form-control", @Value = ViewBag.UsuarioLogado.Nome, @readonly = "readonly", @required = "required" })
+                            @Html.Hidden("CodigoProfissionalEvolucao", null, new { @Value = ViewBag.UsuarioLogado.Codigo, @required = "required" })
+                        </div>
+                        <div class="col-4">
+                            @Html.Label("Data Evolução")
+                            @Html.TextBox("DataHoraEvolucao", null, new { @class = "form-control", @required = "required", @Value = ViewBag.DataHoraCorrente })
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-12">
+                            @Html.Label("Evolução")
+                            @Html.TextArea("DescricaoEvolucao", null, new { @class = "form-control", @rows = "10", @required = "required" })
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" value="atualizar" class="btn btn-primary">Cadastrar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+
+<div class="modal" id="modalAgendamento" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">Novo Status do Agendamento:</h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            
+            @using(Html.BeginForm("AtualizarStatus", "Agenda"))
+            {
+                @Html.AntiForgeryToken();
+                @Html.Hidden("CodigoAgendamento");
+                <input type="hidden" name="CodigoPaciente" value=@ViewBag.Prontuario.Paciente.Codigo />
+                
+                <div class="modal-body">
+                    <label>Agendado</label> @Html.RadioButton("Status", "1", htmlAttributes: new { required = "required" })
+                    &nbsp;
+                    <label>Atendido</label> @Html.RadioButton("Status", "2", htmlAttributes: new { required = "required" })
+                    &nbsp;
+                    <label>Cancelado</label> @Html.RadioButton("Status", "3", htmlAttributes: new { required = "required" })
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" value="atualizar" class="btn btn-primary btn-sm">Atualizar</button>
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Fechar</button>
+                </div>
+                
+            }
+        </div>
+    </div>
+</div>
+
+<style type="text/css">
+    #tbAgendamentos tr {
+        cursor: pointer;
+    }
+</style>
+
+@section scripts{
+    <script type="text/javascript">
+
+        $().ready(function () {
+            $("#nav-dados :input").prop("disabled", true);
+
+            $("#tbAgendamentos tr").click(function(){
+                
+                var idAgendamento = $(this).find('th[data-id]').data('id');
+                
+                $("#CodigoAgendamento").val(idAgendamento);
+                $('#modalAgendamento').modal('show');
+            });
+
+            $("#btnNovaEvolucao").click(function (event) {
+
+                event.preventDefault();
+
+                $('#cadastroEvolucao').modal('show');
+            })
+        })
+    </script>
+}
+
+

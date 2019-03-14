@@ -1,0 +1,76 @@
+﻿@model gestaoclinica.Models.Usuario
+
+<h5>Edição de Usuário</h5>
+
+<hr />
+
+@using (Html.BeginForm("RealizarEdicao", "Usuario", FormMethod.Post))
+{
+    if ((ViewData.ModelState.Any(x => x.Value.Errors.Any())) || (TempData["MsgErro"] != null))
+    {
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert">×</a>
+            <h6>Ops! Aconteceu algo de errado com a sua alteração...</h6>
+            @Html.ValidationSummary()
+            @TempData["MsgErro"]
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-4">
+            @Html.LabelFor(model => model.Nome, "Nome *")
+            @Html.TextBoxFor(model => model.Nome, new { @class = "form-control", required = "required", @Value=ViewBag.Usuario.Nome })
+            @Html.HiddenFor(model => model.Codigo, new { @Value = ViewBag.Usuario.Codigo })
+        </div>
+        <div class="col-4">
+            @Html.LabelFor(model => model.Email, "Email *")
+            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", required = "required", @Value = ViewBag.Usuario.Email })
+        </div>
+        <div class="col-4">
+            @Html.LabelFor(model => model.Status, "Status *")
+            <br />
+            @if (ViewBag.Usuario.Status == "A")
+            {
+                <label>Ativo</label> @Html.RadioButtonFor(model => model.Status, value: "A", htmlAttributes: new { @checked = "checked" })
+                <label>Inativo</label> @Html.RadioButtonFor(model => model.Status, value: "I")
+            }
+            else
+            {
+                <label>Ativo</label> @Html.RadioButtonFor(model => model.Status, value: "A")
+                <label>Inativo</label> @Html.RadioButtonFor(model => model.Status, value: "I", htmlAttributes: new { @checked = "checked" })
+            }
+        </div>
+    </div>
+
+    <br />
+
+    <input type="submit" class="btn btn-primary btn-sm" value="Atualizar" />
+
+    <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#modalAlterarSenha">
+        <i class="fa fa-key"></i> Alterar Senha
+    </button>
+
+    <a class="btn btn-secondary btn-sm text-white" onclick="location.href='@Url.Action("Index", "Usuario")'">Voltar</a>
+}
+
+
+
+<div class="modal" id="modalAlterarSenha" tabindex="-1" role="dialog" aria-labelledby="modalAlterarSenhaLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Alteração de Senha</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary btn-sm">Alterar</button>
+            </div>
+        </div>
+    </div>
+</div>

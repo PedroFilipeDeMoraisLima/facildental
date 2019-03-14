@@ -1,0 +1,244 @@
+﻿@model gestaoclinica.Models.Medicamento
+
+@using (Html.BeginForm("Index", "Medicamento", FormMethod.Get))
+{
+    if (TempData["MsgSucesso"] != null)
+    {
+        <div class="alert alert-success">
+            <a href="#" class="close" data-dismiss="alert">×</a>
+            @TempData["MsgSucesso"]
+        </div>
+    }
+
+    if ((ViewData.ModelState.Any(x => x.Value.Errors.Any())) || (TempData["MsgErro"] != null))
+    {
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert">×</a>
+            <h6>Ops! Aconteceu algo de errado...</h6>
+            @Html.ValidationSummary()
+            @TempData["MsgErro"]
+        </div>
+    }
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="#">Cadastros</a></li>
+            <li class="breadcrumb-item" aria-current="page">@Html.ActionLink("Medicamento", "Index", "Medicamento")</li>
+            <li class="breadcrumb-item active"><a href="#">Gerenciamento</a></li>
+        </ol>
+    </nav>
+
+
+    <button type="button" class="btn btn-primary btn-sm" id="btnCadastroMedicamento"><i class="fas fa-plus"></i>&nbsp;Novo Cadastro</button>
+    <button type="button" class="btn btn-secondary btn-sm"><i class="fas fa-file"></i>&nbsp;Relatório</button>
+
+    <br /> <br />
+
+    <div class="row">
+        <div class="col-12">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
+                </div>
+                <input type="text" id="pesquisa" name="pesquisa" class="form-control" placeholder="Digite um nome de medicamento para pesquisar">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-secondary btn-sm">Pesquisar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="table-responsive table-sm">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">#</th>
+                    <th scope="col">Nome Comercial</th>
+                    <th scope="col">Princípio Ativo</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (gestaoclinica.Models.Medicamento Medicamento in ViewBag.Medicamentos)
+                    {
+                        <tr>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-outline-primary detalhe" id="btnEdicao" title="Editar" value=@Medicamento.Codigo ><i class="fas fa-edit"></i></button>
+                                    <button type="button" class="btn btn-outline-danger exclusao" title="Excluir" value=@Medicamento.Codigo ><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                            <th scope="row">@Medicamento.Codigo.ToString()</th>
+                            <td>@Medicamento.NomeComercial</td>
+                            <td>@Medicamento.PrincipioAtivo</td>
+                            <td>@Medicamento.Status</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+}
+
+<div class="modal" id="cadastroMedicamento" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cadastro de Medicamento</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            @using (Html.BeginForm("CadastrarMedicamento", "Medicamento", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken();
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            @Html.LabelFor(model => model.NomeComercial)
+                            @Html.TextBoxFor(model => model.NomeComercial, new { @class = "form-control", required = "required" })
+                        </div>
+                        <div class="col-6">
+                            @Html.LabelFor(model => model.PrincipioAtivo)
+                            @Html.TextBoxFor(model => model.PrincipioAtivo, new { @class = "form-control", required = "required" })
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" value="atualizar" class="btn btn-primary">Cadastrar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="edicaoMedicamento" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edição do Medicamento</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            @using (Html.BeginForm("AtualizarMedicamento", "Medicamento", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken();
+
+                <div class="modal-body" id="modal-body-edicao">
+                    <div class="row">
+                        <div class="col-2">
+                            @Html.LabelFor(model => model.Codigo)
+                            @Html.TextBoxFor(model => model.Codigo, new { @class = "form-control", required = "required", @readonly = "readonly" })
+                        </div>
+                        <div class="col-5">
+                            @Html.LabelFor(model => model.NomeComercial)
+                            @Html.TextBoxFor(model => model.NomeComercial, new { @class = "form-control", required = "required" })
+                        </div>
+                        <div class="col-5">
+                            @Html.LabelFor(model => model.PrincipioAtivo)
+                            @Html.TextBoxFor(model => model.PrincipioAtivo, new { @class = "form-control", required = "required" })
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-6">
+                            <label>Ativo</label> @Html.RadioButtonFor(model => model.Status, "A", new { @id = "Status_A" })
+                            <label>Inativo</label> @Html.RadioButtonFor(model => model.Status, "I", new { @id = "Status_I" })
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" value="atualizar" class="btn btn-primary">Atualizar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exclusaoMedicamento" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Exclusão do Medicamento</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            @using (Html.BeginForm("ExcluirMedicamento", "Medicamento", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken();
+
+                <div class="modal-body" id="modal-body-exclusao">
+                    <label>Deseja realmente excluir este medicamento?</label>
+                    @Html.HiddenFor(model => model.Codigo)
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" value="atualizar" class="btn btn-danger">Excluir</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">    
+        $().ready(function () {
+
+            $("#btnCadastroMedicamento").click(function (e) {
+
+                $("#cadastroMedicamento").modal('show');
+
+            })
+
+            $(".detalhe").click(function () {
+                var id = $(this).val();
+
+                $.ajax({
+                    url: '/Medicamento/ObterMedicamentoJson',
+                    data: { Codigo: id },
+                    dataType: 'json',
+                    success: function (data) {
+                        $("#modal-body-edicao #Codigo").val(data.Codigo);
+                        $("#modal-body-edicao #NomeComercial").val(data.NomeComercial);
+                        $("#modal-body-edicao #PrincipioAtivo").val(data.PrincipioAtivo);
+
+                        console.log(data.Status);
+
+                        if (data.Status == "Ativo") {
+                            $("#modal-body-edicao #Status_A").prop("checked", true);
+                        } else {
+                            $("#modal-body-edicao #Status_I").prop("checked", true);
+                        }
+                    }
+                })
+
+                $("#edicaoMedicamento").modal('show');
+            })
+
+            $(".exclusao").click(function () {
+                $("#modal-body-exclusao #Codigo").val($(this).val());
+
+                $("#exclusaoMedicamento").modal('show');
+            })
+        })
+
+    </script>
+}
+
+
+
+
+

@@ -1,0 +1,49 @@
+﻿@model gestaoclinica.Models.Tratamento
+
+@using (Html.BeginForm("RealizarExclusao", "Tratamento"))
+{
+    <h5>Detalhe do Tratamento</h5>
+
+    <hr />
+
+    <div class="row">
+        <div class="col-6">
+            @Html.LabelFor(model => model.Descricao, "Descrição *")
+            @Html.TextBoxFor(model => model.Descricao, new { @class = "form-control", required = "required", @readonly = "readonly", @Value = ViewBag.Tratamento.Descricao })
+            @Html.HiddenFor(model => model.Codigo, new { @readonly = "readonly" })
+        </div>
+        <div class="col-3">
+            @Html.LabelFor(model => model.Valor, "Valor *")
+            @Html.TextBoxFor(model => model.Valor, new { @class = "form-control", required = "required", @readonly = "readonly", @Value = ViewBag.Tratamento.Valor })
+        </div>
+        <div class="col-3">
+            @Html.LabelFor(model => model.Descricao, "Status *") <br />
+
+            @if (ViewBag.Tratamento.Status == "A")
+            {
+                <label>Ativo</label> @Html.RadioButtonFor(model => model.Status, value: "A", htmlAttributes: new { @disabled = "disabled", @checked = "true" })
+            }
+            else
+            {
+                <label>Ativo</label> @Html.RadioButtonFor(model => model.Status, value: "A", htmlAttributes: new { @disabled = "disabled" })
+            }
+
+            @if (ViewBag.Tratamento.Status == "I")
+            {
+                <label>Inativo</label> @Html.RadioButtonFor(model => model.Status, value: "I", htmlAttributes: new { @disabled = "disabled", @checked = "true" })
+            }
+            else
+            {
+                <label>Inativo</label> @Html.RadioButtonFor(model => model.Status, value: "I", htmlAttributes: new { @disabled = "disabled" })
+            }
+
+        </div>
+    </div>
+
+    <br />
+
+    <input type="submit" value="Excluir" class="btn btn-danger btn-sm" />
+
+    <a class="btn btn-secondary text-white btn-sm" onclick="location.href='@Url.Action("Index", "Tratamento")'">Voltar</a>
+}
+

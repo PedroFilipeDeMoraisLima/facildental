@@ -1,0 +1,39 @@
+﻿@model gestaoclinica.Models.Usuario
+
+<h5>Cadastro de Usuários</h5>
+
+<hr />
+
+@using (Html.BeginForm("RealizarCadastro", "Usuario"))
+{
+    if ((ViewData.ModelState.Any(x => x.Value.Errors.Any())) || (TempData["MsgErro"] != null))
+    {
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert">×</a>
+            <h6>Ops! Aconteceu algo de errado com o seu cadastro...</h6>
+            @Html.ValidationSummary()
+            @TempData["MsgErro"]
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-4">
+            @Html.LabelFor(model => model.Nome, "Nome *")
+            @Html.TextBoxFor(model => model.Nome, new { @class = "form-control", required = "required" })
+        </div>
+        <div class="col-4">
+            @Html.LabelFor(model => model.Email, "Email *")
+            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", required = "required" })
+        </div>
+        <div class="col-4">
+            @Html.LabelFor(model => model.Senha, "Senha *")
+            @Html.PasswordFor(model => model.Senha, new { @class = "form-control", required = "required" })
+        </div>
+    </div>
+
+    <br />
+
+    <input type="submit" class="btn btn-primary btn-sm" value="Cadastrar" />
+
+    <a class="btn btn-secondary btn-sm text-white" onclick="location.href='@Url.Action("Index", "Usuario")'">Voltar</a>
+}

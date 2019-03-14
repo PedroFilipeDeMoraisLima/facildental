@@ -1,0 +1,185 @@
+﻿@model gestaoclinica.Models.Agenda
+
+<link href='/Content/js/fullcalendar/css/fullcalendar.min.css' rel='stylesheet' />
+<link href='/Content/js/fullcalendar/css/fullcalendar.print.min.css' rel='stylesheet' media='print' />
+
+<div id="calendar"></div>
+
+<div class="modal" id="cadastrar" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agendamento</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @using (Html.BeginForm("RealizarAgendamento", "Agenda"))
+            {
+                <div class="modal-body">
+                    @Html.LabelFor(model => model.Paciente.Nome, "Paciente:")
+                    @Html.DropDownListFor(model => model.Paciente.Codigo, ViewBag.Pacientes as SelectList, new { @class = "form-control" })
+                    <br />
+                    @Html.LabelFor(model => model.Tratamento.Descricao, "Tratamento:")
+                    @Html.DropDownListFor(model => model.Tratamento.Codigo, ViewBag.Tratamentos as SelectList, new { @class = "form-control" })
+                    <br />
+                    @Html.LabelFor(model => model.DataHoraInicial, "Início:")
+                    @Html.TextBoxFor(model => model.DataHoraInicial, new { @class = "form-control" })
+                    <br />
+                    @Html.LabelFor(model => model.DataHoraFinal, "Fim:")
+                    @Html.TextBoxFor(model => model.DataHoraFinal, new { @class = "form-control" })
+                </div>
+                <div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Agendar</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="visualizar" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agendamento</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            @using (Html.BeginForm("AtualizarOuExcluirAgendamento", "Agenda"))
+            {
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <label for="v_nome_paciente">Paciente:</label>
+                            <input type="text" id="v_nome_paciente" name="v_nome_paciente" class="form-control" readonly />
+                        </div>
+                        <div class="col-3">
+                            <label for="v_id">ID:</label>
+                            <input type="text" id="v_id" name="v_id" class="form-control" readonly />
+                        </div>
+                    </div>
+                    <br />
+                    <label for="v_status" class="text">Status:</label>
+                    @Html.DropDownList("StatusAgendamento", ViewBag.StatusAgendamento as SelectList, new { @class = "form-control" })
+                    <br />
+                    <label for="v_id_tratamento">Tratamento:</label>
+                    @Html.DropDownList("CodigoTratamento", ViewBag.Tratamentos as SelectList, new { @class = "form-control", @id = "CodigoTratamento" })
+                    <br />
+                    <label for="v_id">Início:</label>
+                    <input type="text" id="v_data_inicial" name="v_data_inicial" class="form-control" />
+                    <br />
+                    <label for="v_id">Fim:</label>
+                    <input type="text" id="v_data_final" name="v_data_final" class="form-control" />
+                    <input type="hidden" name="txtAcao" id="txtAcao" />
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" value="atualizar" class="btn btn-primary">Atualizar</button>
+                    <button type="submit" value="excluir" id="excluir" class="btn btn-danger">Excluir</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript" src='/Content/js/fullcalendar/js/moment.min.js'></script>
+    <script type="text/javascript" src='/Content/js/fullcalendar/js/fullcalendar.min.js'></script>
+    <script type="text/javascript" src='/Content/js/fullcalendar/locale/pt-br.js'></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $("#excluir").click(function () {
+                $("#txtAcao").prop("value", "excluir");
+            })
+
+            $('#v_data_inicial, #v_data_final, #DataHoraInicial, #DataHoraFinal').mask('00/00/0000 00:00:00');
+
+            $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay,listWeek'
+                },
+                defaultDate: Date(),
+                navLinks: true, // can click day/week names to navigate views
+                editable: true,
+                eventLimit: true, // allow "more" link when too many events,
+                selectable: true,
+                select: function (start, end, className) {
+                    $('#cadastrar').modal('show');
+
+                    $("#DataHoraInicial").val(moment(start).format('DD/MM/YYYY HH:mm:ss'));
+
+                    //var DataFinalTratada = start.format('DD/MM/YYYY HH:mm:ss');
+
+                    //DataFinalTratadaPt1 = DataFinalTratada.substring(0, 2);
+
+                    //DataFinalTratada = DataFinalTratadaPt1.concat(DataFinalTratada.substring(2, DataFinalTratada.length));
+
+                    $("#DataHoraFinal").val(moment(end).format('DD/MM/YYYY HH:mm:ss'));
+
+                },
+                selectHelper: true,
+                eventClick: function (event) {
+
+                    $.ajax({
+                        url: '/Agenda/ObterAgendaJson',
+                        dataType: 'json',
+                        data: { codigo: event._id },
+                        success: function (data) {
+                            DataHoraInicial = new Date(parseInt(data.DataHoraInicial.substr(6)));
+                            DataHoraFinal = new Date(parseInt(data.DataHoraFinal.substr(6)));
+
+                            DataHoraInicial = DataHoraInicial.toLocaleDateString() + " " + DataHoraInicial.toLocaleTimeString();
+                            DataHoraFinal = DataHoraFinal.toLocaleDateString() + " " + DataHoraFinal.toLocaleTimeString();
+
+                            $("#v_id").val(data.Codigo);
+                            $("#v_nome_paciente").val(data.Paciente.Nome);
+                            $("#v_data_inicial").val(DataHoraInicial);
+                            $("#v_data_final").val(DataHoraFinal);
+                            $("#CodigoTratamento").val(data.Tratamento.Codigo);
+                            $("#StatusAgendamento").val(data.Status);
+                            $("#v_status").val(data.Status);
+                        }
+                    })
+
+
+                    $('#visualizar').modal('show');
+                },
+                events: function (start, end, timezone, callback) {
+                    {
+                        $.ajax({
+                            url: '/Agenda/ObterAgendamentosJson',
+                            dataType: 'json',
+                            success: function (data) {
+                                var events = [];
+                                $.each(data, function (index, element) {
+                                    events.push({
+                                        _id: element.id,
+                                        title: element.title,
+                                        start: element.start,
+                                        end: element.end,
+                                        color: element.color,
+                                        textColor: element.textColor
+                                    });
+                                });
+
+                                callback(events);
+                            }
+                        })
+                    }
+                }
+            });
+
+        });
+    </script>
+}
+
+

@@ -1,0 +1,34 @@
+﻿@model gestaoclinica.Models.Usuario
+
+<h5>Detalhe do Usuário</h5>
+
+<hr />
+
+<div class="row">
+    <div class="col-4">
+        @Html.LabelFor(model => model.Nome)
+        @Html.TextBoxFor(model => model.Nome, new { @class = "form-control", required = "required", @readonly = "readonly", @Value = ViewBag.Usuario.Nome })
+    </div>
+    <div class="col-4">
+        @Html.LabelFor(model => model.Email)
+        @Html.TextBoxFor(model => model.Email, new { @class = "form-control", required = "required", @readonly = "readonly", @Value = ViewBag.Usuario.Email })
+    </div>
+    <div class="col-4">
+        @Html.LabelFor(model => model.Status)
+        <br />
+        @if (ViewBag.Usuario.Status == "A")
+        {
+            <label>Ativo</label> @Html.RadioButtonFor(model => model.Status, value: "A", htmlAttributes: new { @disabled = "disabled", @checked = "true" })
+            <label>Inativo</label> @Html.RadioButtonFor(model => model.Status, value: "I", htmlAttributes: new { @disabled = "disabled", @checked = "false" })
+        }
+        else
+        {
+            <label>Ativo</label> @Html.RadioButtonFor(model => model.Status, value: "A", htmlAttributes: new { @disabled = "disabled", @checked = "false" })
+            <label>Inativo</label> @Html.RadioButtonFor(model => model.Status, value: "I", htmlAttributes: new { @disabled = "disabled", @checked = "true" })
+        }
+    </div>
+</div>
+
+<br />
+
+<a class="btn btn-secondary btn-sm text-white" onclick="location.href='@Url.Action("Index", "Usuario")'">Voltar</a>

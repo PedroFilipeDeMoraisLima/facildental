@@ -1,0 +1,21 @@
+.farol
+{
+    width:20px;
+    height:20px;
+    border-radius:50%;
+}
+
+.farol-verde
+{
+    background: #16af35;
+}
+
+.farol-vermelho
+{
+    background: #F44336;
+}
+
+.farol-amarelo
+{
+    background: #f2ea24;
+}

@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>Fácil Dental</title>
+        <link rel="stylesheet" type="text/css" href="~/Content/css/bootstrap/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="~/Content/css/menu/sidebar.css" />
+        <link rel="stylesheet" type="text/css" href="~/Content/css/fontawesome-free-5.7.1-web/css/all.css" />
+    </head>
+    <body>
+        <div class="wrapper">
+            <!-- Sidebar  -->
+            <nav id="sidebar" class="active">
+
+                <div class="sidebar-header">
+                    Fácil Dental <span id="sidebarCollapse"><i class="fa fa-tooth"></i></span> <br />
+                </div>
+
+                @{
+                    var UsuarioLogado = @Session["UsuarioLogado"] as gestaoclinica.Models.Usuario;
+                    <label>Bem Vindo, @UsuarioLogado.PrimeiroNome()</label> 
+                    <label class="small"><b>@Html.ActionLink("sair", "Logout", "Login")</b></label>
+                }
+
+                <ul class="list-unstyled components">
+                    <li class="active">
+                        <a href="#" onclick="location.href='@Url.Action("Index", "Home")'">
+                            <i class="fas fa-home"></i>
+                            Home
+                        </a>
+                        <a href="#cadastros" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                            <i class="fas fa-plus"></i>
+                            Cadastros
+                        </a>
+                        <ul class="collapse list-unstyled" id="cadastros">
+                            <li>
+                                @Html.ActionLink("Medicamento", "Index", "Medicamento")
+                            </li>
+                            <li>
+                                @Html.ActionLink("Usuário", "Index", "Usuario")
+                            </li>
+                            <li>
+                                @Html.ActionLink("Paciente", "Index", "Paciente")
+                            </li>
+                            <li>
+                                @Html.ActionLink("Tratamento", "Index", "Tratamento")
+                            </li>
+                        </ul>
+                        <a href="#" onclick="location.href='@Url.Action("Index", "Agenda")'">
+                            <i class="fas fa-calendar-alt"></i>
+                            Agenda
+                        </a>
+                        <a href="#pep" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                            <i class="fas fa-laptop-medical"></i>
+                            PEP
+                        </a>
+                        <ul class="collapse list-unstyled" id="pep">
+                            <li>
+                                @Html.ActionLink("Prontuário", "Index", "Prontuario")
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <div id="content">
+                <div class="container-fluid">
+
+                    @RenderBody()
+
+                </div>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="~/Content/js/jquery-3.3.1.min.js"></script>
+
+        <script type="text/javascript" src="~/Content/css/bootstrap/js/bootstrap.min.js"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#sidebarCollapse').on('click', function () {
+                    $('#sidebar').toggleClass('active');
+                });
+            });
+        </script>
+
+        @RenderSection("Scripts", false);
+
+    </body>
+</html>

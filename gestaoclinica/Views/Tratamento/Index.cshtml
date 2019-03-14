@@ -1,0 +1,82 @@
+﻿@using (Html.BeginForm("Index", "Tratamento", FormMethod.Get))
+{
+    if (TempData["MsgSucesso"] != null)
+    {
+        <div class="alert alert-success">
+            <a href="#" class="close" data-dismiss="alert">×</a>
+            @TempData["MsgSucesso"]
+        </div>
+    }
+
+    if (TempData["MsgErro"] != null)
+    {
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert">×</a>
+            @TempData["MsgErro"]
+        </div>
+    }
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="#">Cadastros</a></li>
+            <li class="breadcrumb-item" aria-current="page">@Html.ActionLink("Tratamento", "Index", "Tratamento")</li>
+            <li class="breadcrumb-item active"><a href="#">Gerenciamento</a></li>
+        </ol>
+    </nav>
+
+    <button type="button" class="btn btn-primary btn-sm" onclick="location.href='@Url.Action("Cadastro", "Tratamento")'"><i class="fas fa-plus"></i>&nbsp;Novo Cadastro</button>
+    <button type="button" class="btn btn-secondary btn-sm"><i class="fas fa-file"></i>&nbsp;Relatório</button>
+
+    <br /> <br />
+
+    <div class="row">
+        <div class="col-12">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
+                </div>
+                <input type="text" id="pesquisa" name="pesquisa" class="form-control" placeholder="Digite um tratamento para pesquisar">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-secondary btn-sm">Pesquisar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="table-responsive table-sm">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">#</th>
+                    <th scope="col">Descrição</th>
+                    <th scope="col">Valor</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (gestaoclinica.Models.Tratamento Tratamento in ViewBag.Tratamentos)
+                    {
+                        <tr>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-outline-info" title="Ver Detalhes" onclick="location.href='@Url.Action("Detalhe", "Tratamento", new { Tratamento.Codigo })'"><i class="fas fa-file"></i></button>
+                                    <button type="button" class="btn btn-outline-primary" title="Editar" onclick="location.href='@Url.Action("Edicao", "Tratamento", new { Tratamento.Codigo })'"><i class="fas fa-edit"></i></button>
+                                    <button type="button" class="btn btn-outline-danger" title="Excluir" onclick="location.href='@Url.Action("Exclusao", "Tratamento", new { Tratamento.Codigo })'"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                            <th scope="row">@Tratamento.Codigo.ToString()</th>
+                            <td>@Tratamento.Descricao</td>
+                            <td><i class="fas fa-coins"></i>&nbsp;@string.Format("{0:N}", Tratamento.Valor) </td>
+                            <td>@Tratamento.Status</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+}

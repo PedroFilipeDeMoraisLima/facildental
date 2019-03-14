@@ -1,0 +1,177 @@
+﻿@model gestaoclinica.Models.Paciente
+
+<h5>Cadastro de Pacientes</h5>
+
+<hr />
+
+@using (Html.BeginForm("RealizarCadastro", "Paciente", FormMethod.Post))
+{
+    
+    if ((ViewData.ModelState.Any(x => x.Value.Errors.Any())) || (TempData["MsgErro"] != null))
+    {
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert">×</a>
+            <h6>Ops! Aconteceu algo de errado com o seu cadastro...</h6>
+            @Html.ValidationSummary()
+            @TempData["MsgErro"]
+        </div>
+    }
+    
+    <div class="row">
+        <div class="col-md-5">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Nome, "Nome *")
+                @Html.TextBoxFor(model => model.Nome, new { @class = "form-control", required = "required" })
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CPF, "CPF *")
+                @Html.TextBoxFor(model => model.CPF, new { @class = "form-control", required = "required" })
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                @Html.LabelFor(model => model.RG, "RG *")
+                @Html.TextBoxFor(model => model.RG, new { @class = "form-control", required = "required" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Sexo, "Sexo *") <br />
+                Masculino @Html.RadioButtonFor(model => model.Sexo, value: "M")
+                Feminino @Html.RadioButtonFor(model => model.Sexo, value: "F")
+            </div>
+        </div>
+       
+    </div>
+    
+    <div class="row">
+        <div class="col-md-2">
+            <div class="form-group">
+                @Html.LabelFor(model => model.DataNascimento, "Nascimento *")
+                
+                @Html.TextBoxFor(model => model.DataNascimento, new { @class = "form-control", required = "required" })
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Email, "Email *")
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-envelope"></i></span>
+                    </div>
+                    @Html.TextBoxFor(model => model.Email, new { @class = "form-control", @type = "email" })
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Celular, "Celular *")
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-phone"></i></span>
+                    </div>
+                    @Html.TextBoxFor(model => model.Celular, new { @class = "form-control", required = "required" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.TelefoneComercial, "Comercial")
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="basic-addon1"><i class="fas fa-phone"></i></span>
+                    </div>
+                    @Html.TextBoxFor(model => model.TelefoneComercial, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.Label("UF")
+                @Html.DropDownList("UF", ViewBag.UFS as SelectList, "Selecione uma UF", new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                @Html.LabelFor(model => model.CodigoCidade, "Cidade")
+                @Html.DropDownListFor(model => model.CodigoCidade, ViewBag.Cidades as SelectList, "Selecione uma Cidade", new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Endereco)
+                @Html.TextBoxFor(model => model.Endereco, new { @class = "form-control" })
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Bairro)
+                @Html.TextBoxFor(model => model.Bairro, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                @Html.LabelFor(model => model.NumeroEndereco, "Número")
+                @Html.TextBoxFor(model => model.NumeroEndereco, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ComplementoEndereco, "Complemento")
+                @Html.TextBoxFor(model => model.ComplementoEndereco, new { @class = "form-control" })
+            </div>
+        </div>
+    </div>
+    
+    <br />
+
+    <input type="submit" class="btn btn-primary btn-sm" value="Cadastrar" />
+
+    <a class="btn btn-secondary text-white btn-sm" onclick="location.href='@Url.Action("Index", "Paciente")'">Voltar</a>
+}
+
+@section scripts{
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#DataNascimento').mask('00/00/0000');
+            $('#CPF').mask('000.000.000-00', { reverse: true });
+            $('#RG').mask('SS-00.000.000');
+            $("#Celular").mask("(00) 00000-0000")
+            $("#TelefoneComercial").mask("(00) 0000-0000")
+
+            //Coloque aqui o id do primeiro dropdownlist
+            $('#UF').change(function () {
+                //obtém o valor selecionado
+                var id = $(this).find(":selected").val();
+                //Chama a Action para popular o segundo DropDownList
+                $.getJSON('/UF/ObterCidadesPorUF', { codigoUF: id }, function (data) {
+                    //Remove os dados que já possui
+                    //Aqui entra o ID do segundo DropDownList
+                    console.log(data);
+                    $('#CodigoCidade option').remove();
+                    $('#CodigoCidade').append('<option value="">Selecione uma Cidade</option>');
+                    //Popula os options com os valores retornados em JSON
+                    for (var i = 0; i < data.length; i++) {
+                        $('#CodigoCidade').append('<option value="' +
+                            data[i].Codigo + '"> ' +
+                            data[i].Descricao + '</option>');
+                    }
+                });
+            });
+        });
+    </script>
+}
