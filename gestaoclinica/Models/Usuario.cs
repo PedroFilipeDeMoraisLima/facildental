@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 using System.ComponentModel.DataAnnotations;
 
 using System.Data;
@@ -14,6 +15,8 @@ namespace gestaoclinica.Models
     {
         public int Codigo { get; set; }
 
+        public Clinica Clinica { get; set; }
+
         [Required] [MaxLength(45)]
         public string Email { get; set; }
 
@@ -24,15 +27,26 @@ namespace gestaoclinica.Models
         public string Senha { get; set; }
 
         public string Status { get; set; }
-        
-        public Usuario() { }
 
-        public Usuario(int Codigo)
+        [Required]
+        public string Celular { get; set; }
+
+        public enum ePerfil { NULL, Administrador_Clinica, Profissional_Saude, Administrativo }
+
+        [Required]
+        public ePerfil Perfil { get; set; }
+        
+        public Usuario() 
         {
-            Carregar(Codigo);
+            
         }
 
-        public void Carregar(int Codigo)
+        public Usuario(int Codigo, int CodigoClinica)
+        {
+            Carregar(Codigo, CodigoClinica);
+        }
+
+        public void Carregar(int Codigo, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -45,15 +59,19 @@ namespace gestaoclinica.Models
                                         U_EMAIL,
                                         U_SENHA,
                                         U_NOME,
-                                        U_STATUS
+                                        U_STATUS,
+                                        U_PERFIL,
+                                        U_CELULAR
                                         FROM
                                         USUARIO
                                         WHERE
-                                        U_CODIGO =@U_CODIGO";
+                                        U_CODIGO =@U_CODIGO AND
+                                        U_CLINICA =@U_CLINICA";
 
                     using (FbCommand cmdSelect = new FbCommand(TxtSQL, Con))
                     {
                         cmdSelect.Parameters.AddWithValue("U_CODIGO", Codigo);
+                        cmdSelect.Parameters.AddWithValue("U_CLINICA", CodigoClinica);
 
                         using (FbDataReader drSelect = cmdSelect.ExecuteReader())
                         {
@@ -63,6 +81,8 @@ namespace gestaoclinica.Models
                                 this.Email = drSelect.GetString(drSelect.GetOrdinal("U_EMAIL"));
                                 this.Nome = drSelect.GetString(drSelect.GetOrdinal("U_NOME"));
                                 this.Status = drSelect.GetString(drSelect.GetOrdinal("U_STATUS"));
+                                this.Perfil = ObterPerfilVisaoUsuario(drSelect.GetInt32(drSelect.GetOrdinal("U_PERFIL")));
+                                this.Celular = drSelect.GetString(drSelect.GetOrdinal("U_CELULAR"));
                             }
                         }
                     }
@@ -74,7 +94,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void Cadastrar(Usuario u)
+        public void Cadastrar(Usuario u, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -90,7 +110,10 @@ namespace gestaoclinica.Models
                                             U_NOME,
                                             U_EMAIL,
                                             U_SENHA,
-                                            U_STATUS
+                                            U_STATUS,
+                                            U_CLINICA,
+                                            U_PERFIL,
+                                            U_CELULAR
                                         )
                                         VALUES
                                         (
@@ -98,7 +121,10 @@ namespace gestaoclinica.Models
                                             @U_NOME,
                                             @U_EMAIL,
                                             @U_SENHA,
-                                            @U_STATUS
+                                            @U_STATUS,
+                                            @U_CLINICA,
+                                            @U_PERFIL,
+                                            @U_CELULAR
                                         )";
 
                     using (FbCommand cmdInsert = new FbCommand(TxtSQL, Con))
@@ -108,6 +134,9 @@ namespace gestaoclinica.Models
                         cmdInsert.Parameters.AddWithValue("U_EMAIL", u.Email);
                         cmdInsert.Parameters.AddWithValue("U_STATUS", "A");
                         cmdInsert.Parameters.AddWithValue("U_SENHA", Criptografia.Codifica(u.Senha));
+                        cmdInsert.Parameters.AddWithValue("U_CLINICA", CodigoClinica);
+                        cmdInsert.Parameters.AddWithValue("U_PERFIL", ObterPerfilVisaoBanco(u.Perfil));
+                        cmdInsert.Parameters.AddWithValue("U_CELULAR", u.Celular);
 
                         cmdInsert.ExecuteNonQuery();
                     }
@@ -119,7 +148,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void Atualizar(Usuario u)
+        public void Atualizar(Usuario u, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -131,9 +160,12 @@ namespace gestaoclinica.Models
                                         USUARIO
                                         SET
                                         U_NOME =@U_NOME,
-                                        U_STATUS =@U_STATUS
+                                        U_STATUS =@U_STATUS,
+                                        U_PERFIL =@U_PERFIL,
+                                        U_CELULAR =@U_CELULAR
                                         WHERE
-                                        U_CODIGO =@U_CODIGO";
+                                        U_CODIGO =@U_CODIGO AND
+                                        U_CLINICA =@U_CLINICA";
                                         
 
                     using (FbCommand cmdUpdate = new FbCommand(TxtSQL, Con))
@@ -141,6 +173,9 @@ namespace gestaoclinica.Models
                         cmdUpdate.Parameters.AddWithValue("U_CODIGO", u.Codigo);
                         cmdUpdate.Parameters.AddWithValue("U_NOME", u.Nome);
                         cmdUpdate.Parameters.AddWithValue("U_STATUS", u.Status);
+                        cmdUpdate.Parameters.AddWithValue("U_CLINICA", CodigoClinica);
+                        cmdUpdate.Parameters.AddWithValue("U_PERFIL", ObterPerfilVisaoBanco(u.Perfil));
+                        cmdUpdate.Parameters.AddWithValue("U_CELULAR", u.Celular);
 
                         cmdUpdate.ExecuteNonQuery();
                     }
@@ -162,9 +197,14 @@ namespace gestaoclinica.Models
                 {
                     string TxtSQL = @"  SELECT
                                         U_CODIGO,
-                                        U_SENHA
+                                        U_SENHA,
+                                        U_CLINICA,
+                                        CC_NOME
                                         FROM
                                         USUARIO
+                                        INNER JOIN
+                                        CLINICACONTRATO
+                                        ON (U_CLINICA = CC_CODIGO)
                                         WHERE
                                         U_EMAIL =@U_EMAIL AND
                                         U_STATUS = 'A'";
@@ -180,7 +220,13 @@ namespace gestaoclinica.Models
                             {
                                 if (Criptografia.Compara(Senha, drSelect.GetString(drSelect.GetOrdinal("U_SENHA"))))
                                 {
-                                    UsuarioAutenticado.Carregar(drSelect.GetInt32(drSelect.GetOrdinal("U_CODIGO")));
+                                    UsuarioAutenticado.Carregar(drSelect.GetInt32(drSelect.GetOrdinal("U_CODIGO")), drSelect.GetInt32(drSelect.GetOrdinal("U_CLINICA")));
+
+                                    UsuarioAutenticado.Clinica = new Models.Clinica()
+                                    {
+                                        Codigo = drSelect.GetInt32(drSelect.GetOrdinal("U_CLINICA")),
+                                        Nome = drSelect.GetString(drSelect.GetOrdinal("CC_NOME"))
+                                    };
                                 }
                             }
                         }
@@ -195,7 +241,7 @@ namespace gestaoclinica.Models
             return UsuarioAutenticado;
         }
 
-        public void AlterarSenha(int Codigo, string NovaSenha)
+        public void AlterarSenha(int Codigo, string NovaSenha, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -208,12 +254,14 @@ namespace gestaoclinica.Models
                                         SET
                                         U_SENHA =@U_SENHA
                                         WHERE
-                                        U_CODIGO =@U_CODIGO";
+                                        U_CODIGO =@U_CODIGO AND
+                                        U_CLINICA =@U_CLINICA";
 
                     using (FbCommand cmdUpdate = new FbCommand(TxtSQL, Con))
                     {
                         cmdUpdate.Parameters.AddWithValue("U_SENHA", Criptografia.Codifica(NovaSenha));
                         cmdUpdate.Parameters.AddWithValue("U_CODIGO", Codigo);
+                        cmdUpdate.Parameters.AddWithValue("U_CLINICA", CodigoClinica);
 
                         cmdUpdate.ExecuteNonQuery();
                     }
@@ -261,7 +309,7 @@ namespace gestaoclinica.Models
 
         }
 
-        public List<Usuario> ObterUsuarios(string Nome = "")
+        public List<Usuario> ObterUsuarios(int CodigoClinica, string Nome = "")
         {
             List<Usuario> Usuarios = new List<Usuario>();
 
@@ -273,11 +321,13 @@ namespace gestaoclinica.Models
                                         U_CODIGO,
                                         U_EMAIL,
                                         U_NOME,
-                                        U_STATUS
+                                        U_STATUS,
+                                        U_PERFIL,
+                                        U_CELULAR
                                         FROM
                                         USUARIO
                                         WHERE
-                                        1=1 ";
+                                        U_CLINICA =@U_CLINICA ";
 
                     Con.Open();
 
@@ -294,6 +344,8 @@ namespace gestaoclinica.Models
                             cmdSelect.Parameters.Add("U_NOME", string.Concat("%", Nome.ToUpper(), "%"));
                         }
 
+                        cmdSelect.Parameters.AddWithValue("U_CLINICA", CodigoClinica);
+
                         using (FbDataReader drSelect = cmdSelect.ExecuteReader())
                         {
 
@@ -304,7 +356,9 @@ namespace gestaoclinica.Models
                                     Codigo = drSelect.GetInt32(drSelect.GetOrdinal("U_CODIGO")),
                                     Email = drSelect.GetString(drSelect.GetOrdinal("U_EMAIL")),
                                     Nome = drSelect.GetString(drSelect.GetOrdinal("U_NOME")),
-                                    Status = drSelect.GetString(drSelect.GetOrdinal("U_STATUS")).Equals("A") ? "Ativo" : "Inativo"
+                                    Status = drSelect.GetString(drSelect.GetOrdinal("U_STATUS")).Equals("A") ? "Ativo" : "Inativo",
+                                    Perfil = ObterPerfilVisaoUsuario(drSelect.GetInt32(drSelect.GetOrdinal("U_PERFIL"))),
+                                    Celular = drSelect.GetString(drSelect.GetOrdinal("U_CELULAR"))
                                 });
                             }
                         }
@@ -323,6 +377,58 @@ namespace gestaoclinica.Models
         public string PrimeiroNome()
         {
             return this.Nome.Split(' ')[0];
+        }
+
+        private ePerfil ObterPerfilVisaoUsuario(int Codigo)
+        {
+            switch (Codigo)
+            {
+                case 1:
+                    {
+                        return ePerfil.Administrador_Clinica;
+                    }
+
+                case 2:
+                    {
+                        return ePerfil.Profissional_Saude;
+                    }
+
+                case 3:
+                    {
+                        return ePerfil.Administrativo;
+                    }
+
+                default:
+                    {
+                        return ePerfil.NULL;
+                    }
+            }
+        }
+
+        private int ObterPerfilVisaoBanco(ePerfil Perfil)
+        {
+            switch (Perfil)
+            {
+                case ePerfil.Administrador_Clinica:
+                    {
+                        return 1;
+                    }
+
+                case ePerfil.Profissional_Saude:
+                    {
+                        return 2;
+                    }
+
+                case ePerfil.Administrativo:
+                    {
+                        return 3;
+                    }
+
+                default:
+                    {
+                        return 0;
+                    }
+            }
         }
 
     }

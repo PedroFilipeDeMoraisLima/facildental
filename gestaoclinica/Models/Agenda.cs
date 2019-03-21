@@ -18,6 +18,9 @@ namespace gestaoclinica.Models
         [Required]
         public int Codigo { get; set; }
 
+        [Required]
+        public Usuario Profissional { get; set; }
+
         public Paciente Paciente { get; set; }
 
         public string Titulo { get; set; }

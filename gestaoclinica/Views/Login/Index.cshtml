@@ -35,8 +35,100 @@
                         
                         <button type="submit" id="efetuarLogin" class="btn btn-primary">Login</button>
                     }
+                    <hr />
+                    <label class="small">Novo usuário?</label> <a href="#" class="small" data-toggle="modal" data-target="#modalNovoUsuario">Clique aqui para se registrar</a>
+                    <br />
+                    <label class="small">Esqueceu a sua senha?</label> <a href="" class="small">Clique aqui para recuperar</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@using (Html.BeginForm("CadastrarClinica", "Clinica"))
+{
+    @Html.AntiForgeryToken();
+    
+    <div class="modal fade" id="modalNovoUsuario" tabindex="-1" role="dialog" aria-labelledby="modalNovoUsuarioLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Preencha o formulário abaixo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                   <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @Html.Label("Nome da Clínica:")
+                                @Html.TextBox("nomeClinica", null, new { @class = "form-control", @required = "required" })
+                            </div>
+                        </div>
+                   </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @Html.Label("Telefone da Clínica:")
+                                @Html.TextBox("telefoneClinica", null, new { @class = "form-control telefone", @required = "required" })
+                            </div>
+                        </div>
+                    </div>
+                   <hr />
+                   <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @Html.Label("Seu Nome:")
+                                @Html.TextBox("nomeUsuario", null, new { @class = "form-control", @required = "required" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @Html.Label("Celular:")
+                                @Html.TextBox("celularUsuario", null, new { @class = "form-control celular", @required = "required" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @Html.Label("Email:")
+                                @Html.TextBox("emailUsuario", null, new { @class = "form-control", @required = "required", @type="email" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                @Html.Label("Senha:")
+                                @Html.Password("senhaUsuario", null, new { @class = "form-control", @required = "required" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Cadastrar-se</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<script type="text/javascript" src="~/Content/js/jquery-3.3.1.min.js"></script>
+
+<script type="text/javascript" src="~/Content/css/bootstrap/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="~/Content/js/jQuery_Mask_Plugin_v1.14.15.js"></script>
+
+<script type="text/javascript" src="~/Content/js/jquery_mask_class.js"></script>
+
+
+
+
+
+
+

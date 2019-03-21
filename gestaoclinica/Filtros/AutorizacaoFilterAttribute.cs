@@ -15,7 +15,7 @@ namespace gestaoclinica.Filtros
 
             object UsuarioLogado = filterContext.HttpContext.Session["UsuarioLogado"];
 
-            if (UsuarioLogado == null && Controller != "Login")
+            if (UsuarioLogado == null && Controller != "Login" && Controller != "Clinica")
             {
                 filterContext.Result = new RedirectToRouteResult(
                           new RouteValueDictionary(

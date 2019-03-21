@@ -15,7 +15,7 @@
     <AssemblyName>gestaoclinica</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>44300</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -1647,6 +1647,8 @@
     <Content Include="Content\js\fullcalendar\js\theme-chooser.js" />
     <Content Include="Content\js\fullcalendar\locale\pt-br.js" />
     <Content Include="Content\js\jquery-3.3.1.min.js" />
+    <Content Include="Content\js\jquery_mask_class.js" />
+    <Content Include="Content\js\jQuery_Mask_Plugin_v1.14.15.js" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -1655,6 +1657,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AgendaController.cs" />
     <Compile Include="Controllers\CidadeController.cs" />
+    <Compile Include="Controllers\ClinicaController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\MedicamentoController.cs" />
@@ -1670,6 +1673,7 @@
     <Compile Include="Models\Agenda.cs" />
     <Compile Include="Models\AgendaJson.cs" />
     <Compile Include="Models\Cidade.cs" />
+    <Compile Include="Models\Clinica.cs" />
     <Compile Include="Models\CorAgenda.cs" />
     <Compile Include="Models\Criptografia.cs" />
     <Compile Include="Models\Evolucao.cs" />
@@ -1781,6 +1785,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Clinica\" />
     <Folder Include="Views\UF\" />
   </ItemGroup>
   <PropertyGroup>

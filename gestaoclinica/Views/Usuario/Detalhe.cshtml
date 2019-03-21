@@ -14,19 +14,61 @@
         @Html.TextBoxFor(model => model.Email, new { @class = "form-control", required = "required", @readonly = "readonly", @Value = ViewBag.Usuario.Email })
     </div>
     <div class="col-4">
-        @Html.LabelFor(model => model.Status)
-        <br />
-        @if (ViewBag.Usuario.Status == "A")
+        @Html.LabelFor(model => model.Celular, "Celular")
+        @Html.TextBoxFor(model => model.Celular, new { @class = "form-control celular", @readonly = "readonly", @Value = ViewBag.Usuario.Celular })
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-6">
+        @Html.LabelFor(model => model.Perfil, "Perfil") <br />
+
+        @if (ViewBag.Usuario.Perfil == gestaoclinica.Models.Usuario.ePerfil.Administrador_Clinica)
         {
-            <label>Ativo</label> @Html.RadioButtonFor(model => model.Status, value: "A", htmlAttributes: new { @disabled = "disabled", @checked = "true" })
-            <label>Inativo</label> @Html.RadioButtonFor(model => model.Status, value: "I", htmlAttributes: new { @disabled = "disabled", @checked = "false" })
+            <label>Administrador da Clínica</label> @Html.RadioButtonFor(model => model.Perfil, "Administrador_Clinica", new { @disabled = "disabled", @checked = "true" })
         }
         else
         {
-            <label>Ativo</label> @Html.RadioButtonFor(model => model.Status, value: "A", htmlAttributes: new { @disabled = "disabled", @checked = "false" })
-            <label>Inativo</label> @Html.RadioButtonFor(model => model.Status, value: "I", htmlAttributes: new { @disabled = "disabled", @checked = "true" })
+            <label>Administrador da Clínica</label> @Html.RadioButtonFor(model => model.Perfil, "Administrador_Clinica", new { @disabled = "disabled" })
+        }
+
+        &nbsp;
+
+        @if (ViewBag.Usuario.Perfil == gestaoclinica.Models.Usuario.ePerfil.Profissional_Saude)
+        {
+            <label>Dentista</label> @Html.RadioButtonFor(model => model.Perfil, "Profissional_Saude", new { @disabled = "disabled", @checked = "true" })
+        }
+        else
+        {
+            <label>Dentista</label> @Html.RadioButtonFor(model => model.Perfil, "Profissional_Saude", new { @disabled = "disabled" })
+        }
+
+        &nbsp;
+
+        @if (ViewBag.Usuario.Perfil == gestaoclinica.Models.Usuario.ePerfil.Administrativo)
+        {
+            <label>Administrativo</label> @Html.RadioButtonFor(model => model.Perfil, "Administrativo", new { @disabled = "disabled", @checked = "true" })
+        }
+        else
+        {
+            <label>Administrativo</label> @Html.RadioButtonFor(model => model.Perfil, "Administrativo", new { @disabled = "disabled" })
         }
     </div>
+    <div class="col-4">
+        @Html.LabelFor(model => model.Status, "Status")
+        <br />
+        @if (ViewBag.Usuario.Status == "A")
+        {
+            <label>Ativo</label> @Html.RadioButtonFor(model => model.Status, value: "A", htmlAttributes: new { @disabled = "disabled", @checked = "checked" })
+            <label>Inativo</label> @Html.RadioButtonFor(model => model.Status, value: "I", htmlAttributes: new { @disabled = "disabled" })
+        }
+        else
+        {
+            <label>Ativo</label> @Html.RadioButtonFor(model => model.Status, value: "A", htmlAttributes: new { @disabled = "disabled" })
+            <label>Inativo</label> @Html.RadioButtonFor(model => model.Status, value: "I", htmlAttributes: new { @disabled = "disabled", @checked = "checked" })
+        }
+    </div>
+
 </div>
 
 <br />

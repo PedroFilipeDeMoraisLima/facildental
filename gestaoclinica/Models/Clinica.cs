@@ -19,6 +19,8 @@ namespace gestaoclinica.Models
         [MaxLength(180)]
         public string Nome { get; set; }
 
+        public string Telefone { get; set; }
+
         public string Status { get; set; }
 
         public Clinica() { }
@@ -39,7 +41,8 @@ namespace gestaoclinica.Models
                     string TxtSQL = @"  SELECT
                                         CC_CODIGO,
                                         CC_NOME,
-                                        CC_STATUS
+                                        CC_STATUS,
+                                        CC_TELEFONE
                                         FROM
                                         CLINICACONTRATO
                                         WHERE
@@ -56,6 +59,7 @@ namespace gestaoclinica.Models
                                 this.Codigo = drSelect.GetInt32(drSelect.GetOrdinal("CC_CODIGO"));
                                 this.Nome = drSelect.GetString(drSelect.GetOrdinal("CC_NOME"));
                                 this.Status = drSelect.GetString(drSelect.GetOrdinal("CC_STATUS"));
+                                this.Telefone = drSelect.GetString(drSelect.GetOrdinal("CC_TELEFONE"));
                             }
                         }
                     }
@@ -82,20 +86,25 @@ namespace gestaoclinica.Models
                                         (
                                             CC_CODIGO,
                                             CC_NOME,
-                                            CC_STATUS
+                                            CC_STATUS,
+                                            CC_TELEFONE
                                         )
                                         VALUES
                                         (
                                             @CC_CODIGO,
                                             @CC_NOME,
-                                            @CC_STATUS
+                                            @CC_STATUS,
+                                            @CC_TELEFONE
                                         )";
 
                     using (FbCommand cmdInsert = new FbCommand(TxtSQL, Con))
                     {
-                        cmdInsert.Parameters.AddWithValue("CC_CODIGO", GerarCodigo());
+                        this.Codigo = GerarCodigo();
+
+                        cmdInsert.Parameters.AddWithValue("CC_CODIGO", this.Codigo);
                         cmdInsert.Parameters.AddWithValue("CC_NOME", c.Nome);
-                        cmdInsert.Parameters.AddWithValue("CC_STATUS", c.Status);
+                        cmdInsert.Parameters.AddWithValue("CC_STATUS", "A");
+                        cmdInsert.Parameters.AddWithValue("CC_TELEFONE", c.Telefone);
 
                         cmdInsert.ExecuteNonQuery();
                     }
@@ -119,6 +128,7 @@ namespace gestaoclinica.Models
                                         CLINICACONTRATO
                                         SET
                                         CC_NOME =@CC_NOME,
+                                        CC_TELEFONE =@CC_TELEFONE
                                         CC_STATUS
                                         WHERE
                                         CC_CODIGO =@CC_CODIGO";
@@ -128,6 +138,7 @@ namespace gestaoclinica.Models
                         cmdUpdate.Parameters.AddWithValue("CC_CODIGO", c.Codigo);
                         cmdUpdate.Parameters.AddWithValue("CC_NOME", c.Nome);
                         cmdUpdate.Parameters.AddWithValue("CC_STATUS", c.Status);
+                        cmdUpdate.Parameters.AddWithValue("CC_TELEFONE", c.Telefone);
 
                         cmdUpdate.ExecuteNonQuery();
                     }

@@ -30,6 +30,7 @@ namespace gestaoclinica.Controllers
             if (UsuarioAutenticado.Codigo != 0)
             {
                 Session["UsuarioLogado"] = UsuarioAutenticado;
+                Session["CodigoClinica"] = UsuarioAutenticado.Clinica.Codigo;
 
                 return RedirectToAction("Index", "Home");
             }

@@ -25,6 +25,47 @@
             @Html.TextBoxFor(model => model.Email, new { @class = "form-control", required = "required", @Value = ViewBag.Usuario.Email })
         </div>
         <div class="col-4">
+            @Html.LabelFor(model => model.Celular, "Celular *")
+            @Html.TextBoxFor(model => model.Celular, new { @class = "form-control celular", required = "required", @Value = ViewBag.Usuario.Celular })
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-6">
+            @Html.LabelFor(model => model.Perfil, "Perfil *") <br />
+            
+            @if (ViewBag.Usuario.Perfil == gestaoclinica.Models.Usuario.ePerfil.Administrador_Clinica)
+            {
+                <label>Administrador da Clínica</label> @Html.RadioButtonFor(model => model.Perfil, "Administrador_Clinica", new { @required = "required", @checked = "true" })
+            }
+            else
+            {
+                <label>Administrador da Clínica</label> @Html.RadioButtonFor(model => model.Perfil, "Administrador_Clinica", new { @required = "required" })
+            }
+
+            &nbsp;
+
+            @if (ViewBag.Usuario.Perfil == gestaoclinica.Models.Usuario.ePerfil.Profissional_Saude)
+            {
+                <label>Dentista</label> @Html.RadioButtonFor(model => model.Perfil, "Profissional_Saude", new { @required = "required", @checked = "true" })
+            }
+            else
+            {
+                <label>Dentista</label> @Html.RadioButtonFor(model => model.Perfil, "Profissional_Saude", new { @required = "required" })
+            }
+
+            &nbsp;
+
+            @if (ViewBag.Usuario.Perfil == gestaoclinica.Models.Usuario.ePerfil.Administrativo)
+            {
+                <label>Administrativo</label> @Html.RadioButtonFor(model => model.Perfil, "Administrativo", new { @required = "required", @checked = "true" })
+            }
+            else
+            {
+                <label>Administrativo</label> @Html.RadioButtonFor(model => model.Perfil, "Administrativo", new { @required = "required" })
+            }
+        </div>
+        <div class="col-4">
             @Html.LabelFor(model => model.Status, "Status *")
             <br />
             @if (ViewBag.Usuario.Status == "A")
@@ -54,29 +95,29 @@
 @using (Html.BeginForm("AlterarSenha", "Usuario", FormMethod.Post))
 {
     
-@Html.AntiForgeryToken()
+    @Html.AntiForgeryToken()
     
-<div class="modal" id="modalAlterarSenha" tabindex="-1" role="dialog" aria-labelledby="modalAlterarSenhaLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Alteração de Senha</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                @Html.LabelFor(model => model.Senha, "Nova Senha")
-                @Html.PasswordFor(model => model.Senha, new { @class = "form-control", required = "required" })
-                @Html.HiddenFor(model => model.Codigo)
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Fechar</button>
-                <input type="submit" class="btn btn-primary btn-sm" value="Alterar" />
+    <div class="modal" id="modalAlterarSenha" tabindex="-1" role="dialog" aria-labelledby="modalAlterarSenhaLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Alteração de Senha</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @Html.LabelFor(model => model.Senha, "Nova Senha")
+                    @Html.PasswordFor(model => model.Senha, new { @class = "form-control", required = "required" })
+                    @Html.HiddenFor(model => model.Codigo)
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Fechar</button>
+                    <input type="submit" class="btn btn-primary btn-sm" value="Alterar" />
+                </div>
             </div>
         </div>
     </div>
-</div>
 }
 
 

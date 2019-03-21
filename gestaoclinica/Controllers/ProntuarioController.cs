@@ -72,5 +72,10 @@ namespace gestaoclinica.Controllers
             }
         }
 
+        private int ObterCodigoClinicaUsuarioLogado()
+        {
+            return int.Parse(Session["CodigoClinica"].ToString());
+        }
+
     }
 }
