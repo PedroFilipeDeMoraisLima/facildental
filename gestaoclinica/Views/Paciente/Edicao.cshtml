@@ -28,7 +28,7 @@
         <div class="col-md-2">
             <div class="form-group">
                 @Html.LabelFor(model => model.CPF, "CPF *")
-                @Html.TextBoxFor(model => model.CPF, new { @class = "form-control", required = "required", @Value=ViewBag.Paciente.CPF })
+                @Html.TextBoxFor(model => model.CPF, new { @class = "form-control cpf", required = "required", @Value=ViewBag.Paciente.CPF })
             </div>
         </div>
         <div class="col-md-2">
@@ -68,7 +68,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.DataNascimento, "Nascimento *")
 
-                @Html.TextBoxFor(model => model.DataNascimento, new { @class = "form-control", required = "required", @Value = ViewBag.Paciente.DataNascimento.ToString("dd/MM/yyyy") })
+                @Html.TextBoxFor(model => model.DataNascimento, new { @class = "form-control data", required = "required", @Value = ViewBag.Paciente.DataNascimento.ToString("dd/MM/yyyy") })
             </div>
         </div>
 
@@ -91,7 +91,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1"><i class="fas fa-phone"></i></span>
                     </div>
-                    @Html.TextBoxFor(model => model.Celular, new { @class = "form-control", required = "required", @Value = ViewBag.Paciente.Celular })
+                    @Html.TextBoxFor(model => model.Celular, new { @class = "form-control celular", required = "required", @Value = ViewBag.Paciente.Celular })
                 </div>
             </div>
         </div>
@@ -103,7 +103,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text" id="basic-addon1"><i class="fas fa-phone"></i></span>
                     </div>
-                    @Html.TextBoxFor(model => model.TelefoneComercial, new { @class = "form-control", @Value = ViewBag.Paciente.TelefoneComercial })
+                    @Html.TextBoxFor(model => model.TelefoneComercial, new { @class = "form-control telefone", @Value = ViewBag.Paciente.TelefoneComercial })
                 </div>
             </div>
         </div>
@@ -157,19 +157,14 @@
 
     <input type="submit" class="btn btn-primary btn-sm" value="Atualizar" />
 
-    <a class="btn btn-secondary text-white btn-sm" onclick="location.href='@Url.Action("Index", "Paciente")'">Voltar</a>
+    <a class="btn btn-secondary text-white btn-sm" onclick="location.href='@Url.Action("Detalhe", "Prontuario", new { Codigo = ViewBag.Paciente.Codigo })'">Voltar</a>
 }
 
 @section scripts{
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
+    <script type="text/javascript" src="~/Content/js/jQuery_Mask_Plugin_v1.14.15.js"></script>
+    <script type="text/javascript" src="~/Content/js/jquery_mask_class.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#DataNascimento').mask('00/00/0000');
-            $('#CPF').mask('000.000.000-00', { reverse: true });
-            $('#RG').mask('SS-00.000.000');
-            $("#Celular").mask("(00) 00000-0000")
-            $("#TelefoneComercial").mask("(00) 0000-0000")
-
             //Coloque aqui o id do primeiro dropdownlist
             $('#UF').change(function () {
                 //obtém o valor selecionado

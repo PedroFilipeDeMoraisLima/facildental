@@ -9,32 +9,40 @@ namespace gestaoclinica.Controllers
 {
     public class AgendaController : Controller
     {
-        // GET: Agenda
+        [HttpGet]
         public ActionResult Index()
         {
             Paciente p = new Paciente();
 
-            ViewBag.Pacientes = new SelectList(p.ObterPacientes(), "Codigo", "Nome");
+            ViewBag.Pacientes = new SelectList(p.ObterPacientes(ObterCodigoClinicaUsuarioLogado()), "Codigo", "Nome");
 
             Tratamento T = new Tratamento();
 
-            ViewBag.Tratamentos = new SelectList(T.ObterTratamentos(), "Codigo", "DescricaoComValor");
+            ViewBag.Tratamentos = new SelectList(T.ObterTratamentos(ObterCodigoClinicaUsuarioLogado()), "Codigo", "Descricao");
 
             Agenda Agenda = new Models.Agenda();
 
-            ViewBag.StatusAgendamento = Agenda.ObterSelectItemStatus(); 
+            ViewBag.StatusAgendamento = Agenda.ObterSelectItemStatus();
+
+            Usuario u = new Usuario();
+
+            ViewBag.Profissionais = new SelectList(u.ObterUsuarios(ObterCodigoClinicaUsuarioLogado()), "Codigo", "Nome");
+
+            var UsuarioLogado = @Session["UsuarioLogado"] as gestaoclinica.Models.Usuario;
+
+            ViewBag.SelecaoAgenda = u.ObterSelectItemProfissionaisAgenda(ObterCodigoClinicaUsuarioLogado(), UsuarioLogado.Clinica.Nome);
 
             return View();
         }
 
         [HttpGet]
-        public JsonResult ObterAgendamentosJson()
+        public JsonResult ObterAgendamentosJson(int CodigoProfissional = 0)
         {
             AgendaJson AgendaJson = new AgendaJson();
 
             List<AgendaJson> Agendamentos = new List<AgendaJson>();
 
-            Agendamentos = AgendaJson.ObterAgendamentosJson();
+            Agendamentos = AgendaJson.ObterAgendamentosJson(ObterCodigoClinicaUsuarioLogado(), CodigoProfissional);
 
             return Json(Agendamentos, JsonRequestBehavior.AllowGet);
         }
@@ -44,7 +52,7 @@ namespace gestaoclinica.Controllers
         {
             Agenda AgendaJson = new Agenda();
 
-            AgendaJson = AgendaJson.ObterAgendamentoPorCodigo(Codigo);
+            AgendaJson = AgendaJson.ObterAgendamentoPorCodigo(Codigo, ObterCodigoClinicaUsuarioLogado());
 
             return Json(AgendaJson, JsonRequestBehavior.AllowGet);
         }
@@ -54,7 +62,7 @@ namespace gestaoclinica.Controllers
         {
             try
             {
-                Agenda.Cadastrar();
+                Agenda.Cadastrar(ObterCodigoClinicaUsuarioLogado());
 
                 return RedirectToAction("Index");
             }
@@ -68,7 +76,7 @@ namespace gestaoclinica.Controllers
         }
 
         public ActionResult AtualizarOuExcluirAgendamento(int v_id, DateTime v_data_inicial, DateTime v_data_final, int CodigoTratamento,  
-            string StatusAgendamento, FormCollection Collection)
+            string StatusAgendamento, int CodigoProfissional, FormCollection Collection)
         {
             try
             {
@@ -79,13 +87,14 @@ namespace gestaoclinica.Controllers
                 {
                     Agenda Agenda = new Models.Agenda();
 
-                    Agenda.Excluir(v_id);
+                    Agenda.Excluir(v_id, ObterCodigoClinicaUsuarioLogado());
                 }
                 else
                 {
                     Agenda Agenda = new Models.Agenda();
 
-                    Agenda.Atualizar(v_id, v_data_inicial, v_data_final, CodigoTratamento, StatusAgendamento);
+                    Agenda.Atualizar(v_id, v_data_inicial, v_data_final, CodigoTratamento, StatusAgendamento, 
+                        CodigoProfissional, ObterCodigoClinicaUsuarioLogado());
                 }
 
                 return RedirectToAction("Index");
@@ -105,7 +114,7 @@ namespace gestaoclinica.Controllers
             {
                 Agenda a = new Agenda();
 
-                a.AtualizarStatus(CodigoAgendamento, Status);
+                a.AtualizarStatus(CodigoAgendamento, Status, ObterCodigoClinicaUsuarioLogado());
 
                 TempData["MsgSucesso"] = "Status do agendamento atualizado com sucesso.";
 
@@ -118,5 +127,11 @@ namespace gestaoclinica.Controllers
                 return RedirectToAction("Detalhe", "Prontuario", new { Codigo = CodigoPaciente });
             }
         }
+
+        private int ObterCodigoClinicaUsuarioLogado()
+        {
+            return int.Parse(Session["CodigoClinica"].ToString());
+        }
+
     }
 }

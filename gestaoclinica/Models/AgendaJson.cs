@@ -22,11 +22,11 @@ namespace gestaoclinica.Models
 
         public AgendaJson() { }
 
-        public List<AgendaJson> ObterAgendamentosJson()
+        public List<AgendaJson> ObterAgendamentosJson(int CodigoClinica, int CodigoProfissional)
         {
             List<AgendaJson> Agendamentos = new List<AgendaJson>();
 
-            foreach (Agenda ObjAgenda in this.ObterAgendamentos())
+            foreach (Agenda ObjAgenda in this.ObterAgendamentos(CodigoClinica, CodigoProfissional))
             {
                 Agendamentos.Add(new AgendaJson() 
                 {

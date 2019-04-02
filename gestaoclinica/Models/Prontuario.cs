@@ -26,7 +26,7 @@ namespace gestaoclinica.Models
 
         public Prontuario() { }
 
-        public Prontuario(int Codigo)
+        public Prontuario(int Codigo, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -44,13 +44,15 @@ namespace gestaoclinica.Models
                                         LEFT JOIN EVOLUCAO E
                                         ON (P1.P_CODIGO = E_CODIGO)
                                         WHERE
-                                        P1.P_CODIGO =@P_CODIGO";
+                                        P1.P_CODIGO =@P_CODIGO AND
+                                        P1.P_CLINICA =@P_CLINICA";
 
                     Con.Open();
 
                     using (FbCommand cmdSelect = new FbCommand(TxtSQL, Con))
                     {
                         cmdSelect.Parameters.AddWithValue("P_CODIGO", Codigo);
+                        cmdSelect.Parameters.AddWithValue("P_CLINICA", CodigoClinica);
 
                         using (FbDataReader drSelect = cmdSelect.ExecuteReader())
                         {
@@ -91,7 +93,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void Cadastrar(int CodigoPaciente)
+        public void Cadastrar(int CodigoPaciente, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -101,11 +103,13 @@ namespace gestaoclinica.Models
                                         INTO 
                                         PRONTUARIO
                                         (
-                                            P_CODIGO
+                                            P_CODIGO,
+                                            P_CLINICA
                                         )
                                         VALUES
                                         (
-                                            @P_CODIGO
+                                            @P_CODIGO,
+                                            @P_CLINICA
                                         )";
 
                     Con.Open();
@@ -113,6 +117,7 @@ namespace gestaoclinica.Models
                     using (FbCommand cmdInsert = new FbCommand(TxtSQL, Con))
                     {
                         cmdInsert.Parameters.AddWithValue("P_CODIGO", CodigoPaciente);
+                        cmdInsert.Parameters.AddWithValue("P_CLINICA", CodigoClinica);
 
                         cmdInsert.ExecuteNonQuery();
                     }
@@ -125,18 +130,13 @@ namespace gestaoclinica.Models
 
         }
 
-        public void AtualizarAnotacoes(Prontuario p)
+        public void AtualizarAnotacoes(Prontuario p, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
                 try
                 {
-                    string TxtSQL = @" UPDATE PRONTUARIO SET P_ANOTACOES =@P_ANOTACOES WHERE P_CODIGO =@P_CODIGO";
-
-                    using (FbCommand cmdUpdate = new FbCommand(TxtSQL, Con))
-                    {
-
-                    }
+                    string TxtSQL = @" UPDATE PRONTUARIO SET P_ANOTACOES =@P_ANOTACOES WHERE P_CODIGO =@P_CODIGO AND P_CLINICA =@P_CLINICA";
 
                     Con.Open();
 
@@ -144,6 +144,7 @@ namespace gestaoclinica.Models
                     {
                         cmdUpdate.Parameters.AddWithValue("P_ANOTACOES", p.Anotacoes);
                         cmdUpdate.Parameters.AddWithValue("P_CODIGO", p.Paciente.Codigo);
+                        cmdUpdate.Parameters.AddWithValue("P_CLINICA", CodigoClinica);
 
                         cmdUpdate.ExecuteNonQuery();
                     }
@@ -155,13 +156,13 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void AtualizarCodigoInterno(Prontuario p)
+        public void AtualizarCodigoInterno(Prontuario p, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
                 try
                 {
-                    string TxtSQL = @" UPDATE PRONTUARIO SET P_CODIGOINTERNO =@P_CODIGOINTERNO WHERE P_CODIGO =@P_CODIGO";
+                    string TxtSQL = @" UPDATE PRONTUARIO SET P_CODIGOINTERNO =@P_CODIGOINTERNO WHERE P_CODIGO =@P_CODIGO AND P_CLINICA =@P_CLINICA";
 
                     Con.Open();
 
@@ -170,6 +171,7 @@ namespace gestaoclinica.Models
 
                         cmdUpdate.Parameters.AddWithValue("P_CODIGOINTERNO", p.CodigoEmpresaProntuario);
                         cmdUpdate.Parameters.AddWithValue("P_CODIGO", p.Paciente.Codigo);
+                        cmdUpdate.Parameters.AddWithValue("P_CLINICA", CodigoClinica);
 
                         cmdUpdate.ExecuteNonQuery();
                     }
@@ -181,13 +183,13 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void CarregarEvolucoes()
+        public void CarregarEvolucoes(int CodigoClinica)
         {
             Evolucao Evolucao = new Evolucao();
 
             this.Evolucoes = new List<Evolucao>();
 
-            this.Evolucoes = Evolucao.ObterEvolucoesPorProntuario(this.Paciente.Codigo);
+            this.Evolucoes = Evolucao.ObterEvolucoesPorProntuario(this.Paciente.Codigo, CodigoClinica);
         }
 
     }

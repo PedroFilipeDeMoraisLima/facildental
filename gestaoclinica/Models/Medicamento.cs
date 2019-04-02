@@ -29,12 +29,12 @@ namespace gestaoclinica.Models
 
         public Medicamento() { }
 
-        public Medicamento(int Codigo)
+        public Medicamento(int Codigo, int CodigoClinica)
         {
-            Carregar(Codigo);
+            Carregar(Codigo, CodigoClinica);
         }
 
-        public void Carregar(int Codigo)
+        public void Carregar(int Codigo, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -51,11 +51,13 @@ namespace gestaoclinica.Models
                                         FROM
                                         MEDICAMENTO
                                         WHERE
-                                        M_CODIGO =@M_CODIGO";
+                                        M_CODIGO =@M_CODIGO AND
+                                        M_CLINICA =@M_CLINICA";
 
                     using (FbCommand cmdSelect = new FbCommand(TxtSQL, Con))
                     {
                         cmdSelect.Parameters.AddWithValue("M_CODIGO", Codigo);
+                        cmdSelect.Parameters.AddWithValue("M_CLINICA", CodigoClinica);
 
                         using (FbDataReader drSelect = cmdSelect.ExecuteReader())
                         {
@@ -77,7 +79,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public List<Medicamento> ObterMedicamentos(string NomeComercial = "")
+        public List<Medicamento> ObterMedicamentos(int CodigoClinica, string NomeComercial = "")
         {
             List<Medicamento> Medicamentos = new List<Medicamento>();
 
@@ -96,7 +98,7 @@ namespace gestaoclinica.Models
                                         FROM
                                         MEDICAMENTO
                                         WHERE
-                                        1=1 ";
+                                        M_CLINICA =@M_CLINICA ";
 
                     if (NomeComercial != "")
                     {
@@ -105,6 +107,8 @@ namespace gestaoclinica.Models
 
                     using (FbCommand cmdSelect = new FbCommand(TxtSQL, Con))
                     {
+                        cmdSelect.Parameters.Add("M_CLINICA", CodigoClinica);
+                        
                         if (NomeComercial != "")
                         {
                             cmdSelect.Parameters.Add("M_NOMECOMERCIAL", string.Concat("%", NomeComercial.ToUpper(), "%"));
@@ -135,7 +139,7 @@ namespace gestaoclinica.Models
             return Medicamentos;
         }
 
-        public void Cadastrar(Medicamento M)
+        public void Cadastrar(Medicamento M, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -150,14 +154,16 @@ namespace gestaoclinica.Models
                                             M_CODIGO,
                                             M_NOMECOMERCIAL,
                                             M_PRINCIPIOATIVO,
-                                            M_STATUS
+                                            M_STATUS,
+                                            M_CLINICA
                                         )
                                         VALUES
                                         (
                                             @M_CODIGO,
                                             @M_NOMECOMERCIAL,
                                             @M_PRINCIPIOATIVO,
-                                            @M_STATUS
+                                            @M_STATUS,
+                                            @M_CLINICA
                                         )";
 
                     using (FbCommand cmdInsert = new FbCommand(TxtSQL, Con))
@@ -166,6 +172,7 @@ namespace gestaoclinica.Models
                         cmdInsert.Parameters.AddWithValue("M_NOMECOMERCIAL", M.NomeComercial);
                         cmdInsert.Parameters.AddWithValue("M_PRINCIPIOATIVO", M.PrincipioAtivo);
                         cmdInsert.Parameters.AddWithValue("M_STATUS", "A");
+                        cmdInsert.Parameters.AddWithValue("M_CLINICA", CodigoClinica);
 
                         cmdInsert.ExecuteNonQuery();
                     }
@@ -177,7 +184,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void Atualizar(Medicamento M)
+        public void Atualizar(Medicamento M, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -192,7 +199,8 @@ namespace gestaoclinica.Models
                                         M_PRINCIPIOATIVO =@M_PRINCIPIOATIVO,
                                         M_STATUS =@M_STATUS
                                         WHERE
-                                        M_CODIGO =@M_CODIGO";
+                                        M_CODIGO =@M_CODIGO AND
+                                        M_CLINICA =@M_CLINICA";
 
                     using (FbCommand cmdUpdate = new FbCommand(TxtSQL, Con))
                     {
@@ -200,6 +208,7 @@ namespace gestaoclinica.Models
                         cmdUpdate.Parameters.AddWithValue("M_NOMECOMERCIAL", M.NomeComercial);
                         cmdUpdate.Parameters.AddWithValue("M_PRINCIPIOATIVO", M.PrincipioAtivo);
                         cmdUpdate.Parameters.AddWithValue("M_STATUS", M.Status);
+                        cmdUpdate.Parameters.AddWithValue("M_CLINICA", CodigoClinica);
 
                         cmdUpdate.ExecuteNonQuery();
                     }
@@ -212,7 +221,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void Excluir(int Codigo)
+        public void Excluir(int Codigo, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -224,11 +233,13 @@ namespace gestaoclinica.Models
                                         FROM
                                         MEDICAMENTO
                                         WHERE
-                                        M_CODIGO =@M_CODIGO";
+                                        M_CODIGO =@M_CODIGO AND
+                                        M_CLINICA =@M_CLINICA";
 
                     using (FbCommand cmdDelete = new FbCommand(TxtSQL, Con))
                     {
                         cmdDelete.Parameters.AddWithValue("M_CODIGO", Codigo);
+                        cmdDelete.Parameters.AddWithValue("M_CLINICA", CodigoClinica);
 
                         cmdDelete.ExecuteNonQuery();
                     }

@@ -309,7 +309,7 @@ namespace gestaoclinica.Models
 
         }
 
-        public List<Usuario> ObterUsuarios(int CodigoClinica, string Nome = "")
+        public List<Usuario> ObterUsuarios(int CodigoClinica, string Nome = "", string Status = "A")
         {
             List<Usuario> Usuarios = new List<Usuario>();
 
@@ -336,12 +336,24 @@ namespace gestaoclinica.Models
                         TxtSQL = string.Concat(TxtSQL, "AND UPPER(", Firebird.CHARSET, "U_NOME) LIKE @U_NOME ");
                     }
 
+                    if (Status != "")
+                    {
+                        TxtSQL += "AND U_STATUS =@U_STATUS ";
+                    }
+
+                    TxtSQL += "ORDER BY U_NOME";
+
                     using (FbCommand cmdSelect = new FbCommand(TxtSQL, Con))
                     {
 
                         if (Nome != "")
                         {
                             cmdSelect.Parameters.Add("U_NOME", string.Concat("%", Nome.ToUpper(), "%"));
+                        }
+
+                        if (Status != "")
+                        {
+                            cmdSelect.Parameters.Add("U_STATUS", Status);
                         }
 
                         cmdSelect.Parameters.AddWithValue("U_CLINICA", CodigoClinica);
@@ -429,6 +441,22 @@ namespace gestaoclinica.Models
                         return 0;
                     }
             }
+        }
+
+        public List<SelectListItem> ObterSelectItemProfissionaisAgenda(int CodigoClinica, string NomeClinica)
+        {
+            List<SelectListItem> Profissioanais = new List<SelectListItem>();
+
+            Profissioanais.Add(new SelectListItem() { Text = "Clínica: " + NomeClinica, Value = "" });
+
+            Usuario u = new Usuario();
+
+            foreach (Usuario ObjUsuario in u.ObterUsuarios(CodigoClinica))
+            {
+                Profissioanais.Add(new SelectListItem() { Text = ObjUsuario.Nome, Value = ObjUsuario.Codigo.ToString() });
+            }
+
+            return Profissioanais;
         }
 
     }

@@ -18,16 +18,12 @@ namespace gestaoclinica.Models
         [Required][MaxLength(180)]
         public string Descricao { get; set; }
 
-        public string DescricaoComValor { get; set; }
-
-        public decimal Valor { get; set; }
-
         [Required]
         public string Status { get; set; }
 
         public Tratamento() { }
 
-        public Tratamento(int Codigo)
+        public Tratamento(int Codigo, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -38,16 +34,17 @@ namespace gestaoclinica.Models
                     string TxtSQL = @"  SELECT
                                         T_CODIGO,
                                         T_DESCRICAO,
-                                        T_STATUS,
-                                        T_VALOR
+                                        T_STATUS
                                         FROM
                                         TRATAMENTO
                                         WHERE
-                                        T_CODIGO =@T_CODIGO";
+                                        T_CODIGO =@T_CODIGO AND
+                                        T_CLINICA =@T_CLINICA";
 
                     using (FbCommand cmdSelect = new FbCommand(TxtSQL, Con))
                     {
                         cmdSelect.Parameters.AddWithValue("T_CODIGO", Codigo);
+                        cmdSelect.Parameters.AddWithValue("T_CLINICA", CodigoClinica);
 
                         using (FbDataReader drSelect = cmdSelect.ExecuteReader())
                         {
@@ -56,8 +53,7 @@ namespace gestaoclinica.Models
                                 this.Codigo = drSelect.GetInt32(drSelect.GetOrdinal("T_CODIGO"));
                                 this.Descricao = drSelect.GetString(drSelect.GetOrdinal("T_DESCRICAO"));
                                 this.Status = drSelect.GetString(drSelect.GetOrdinal("T_STATUS"));
-                                this.Valor = drSelect.GetDecimal(drSelect.GetOrdinal("T_VALOR"));
-                                this.DescricaoComValor = this.Descricao + " - " + "R$" + string.Format("{0:N}", this.Valor);
+                                //this.DescricaoComValor = this.Descricao + " - " + "R$" + string.Format("{0:N}", this.Valor);
                             }
                         }
                     }
@@ -69,7 +65,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public List<Tratamento> ObterTratamentos(string Descricao = "")
+        public List<Tratamento> ObterTratamentos(int CodigoClinica, string Descricao = "")
         {
             List<Tratamento> Tratamentos = new List<Tratamento>();
 
@@ -82,12 +78,11 @@ namespace gestaoclinica.Models
                     string TxtSQL = @"  SELECT
                                         T_CODIGO,
                                         T_DESCRICAO,
-                                        T_STATUS,
-                                        T_VALOR
+                                        T_STATUS
                                         FROM
                                         TRATAMENTO
                                         WHERE
-                                        1=1 ";
+                                        T_CLINICA =@T_CLINICA ";
 
                     if (Descricao != "")
                     {
@@ -98,9 +93,11 @@ namespace gestaoclinica.Models
 
                     using (FbCommand cmdSelect = new FbCommand(TxtSQL, Con))
                     {
+                        cmdSelect.Parameters.AddWithValue("T_CLINICA", CodigoClinica);
+
                         if (Descricao != "")
                         {
-                            cmdSelect.Parameters.Add("T_DESCRICAO", string.Concat("%", Descricao.ToUpper(), "%"));
+                            cmdSelect.Parameters.AddWithValue("T_DESCRICAO", string.Concat("%", Descricao.ToUpper(), "%"));
                         }
 
                         using (FbDataReader drSelect = cmdSelect.ExecuteReader())
@@ -111,10 +108,7 @@ namespace gestaoclinica.Models
                                 {
                                     Codigo = drSelect.GetInt32(drSelect.GetOrdinal("T_CODIGO")),
                                     Descricao = drSelect.GetString(drSelect.GetOrdinal("T_DESCRICAO")),
-                                    Status = ObterStatusVisaoUsuario(drSelect.GetString(drSelect.GetOrdinal("T_STATUS"))),
-                                    Valor = !drSelect.IsDBNull(drSelect.GetOrdinal("T_VALOR")) ? drSelect.GetDecimal(drSelect.GetOrdinal("T_VALOR")) : 0,
-                                    DescricaoComValor = drSelect.GetString(drSelect.GetOrdinal("T_DESCRICAO"))
-                                        + " - " + "R$" + string.Format("{0:N}", drSelect.GetDecimal(drSelect.GetOrdinal("T_VALOR")))
+                                    Status = ObterStatusVisaoUsuario(drSelect.GetString(drSelect.GetOrdinal("T_STATUS")))
                                 });
                             }
                         }
@@ -130,7 +124,7 @@ namespace gestaoclinica.Models
             return Tratamentos;
         }
 
-        public void Cadastrar()
+        public void Cadastrar(int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -145,14 +139,14 @@ namespace gestaoclinica.Models
                                             T_CODIGO,
                                             T_DESCRICAO,
                                             T_STATUS,
-                                            T_VALOR
+                                            T_CLINICA
                                         )
                                         VALUES
                                         (
                                             @T_CODIGO,
                                             @T_DESCRICAO,
                                             @T_STATUS,
-                                            @T_VALOR
+                                            @T_CLINICA
                                         )";
 
                     using (FbCommand cmdInsert = new FbCommand(TxtSQL, Con))
@@ -160,7 +154,7 @@ namespace gestaoclinica.Models
                         cmdInsert.Parameters.AddWithValue("T_CODIGO", this.GerarCodigo());
                         cmdInsert.Parameters.AddWithValue("T_DESCRICAO", this.Descricao);
                         cmdInsert.Parameters.AddWithValue("T_STATUS", this.Status);
-                        cmdInsert.Parameters.AddWithValue("T_VALOR", this.Valor);
+                        cmdInsert.Parameters.AddWithValue("T_CLINICA", CodigoClinica);
 
                         cmdInsert.ExecuteNonQuery();
                     }
@@ -172,7 +166,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void Atualizar()
+        public void Atualizar(int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -184,17 +178,17 @@ namespace gestaoclinica.Models
                                         TRATAMENTO
                                         SET
                                         T_DESCRICAO =@T_DESCRICAO,
-                                        T_STATUS =@T_STATUS,
-                                        T_VALOR =@T_VALOR
+                                        T_STATUS =@T_STATUS
                                         WHERE
-                                        T_CODIGO =@T_CODIGO";
+                                        T_CODIGO =@T_CODIGO AND
+                                        T_CLINICA =@T_CLINICA";
 
                     using (FbCommand cmdUpdate = new FbCommand(TxtSQL, Con))
                     {
                         cmdUpdate.Parameters.AddWithValue("T_DESCRICAO", this.Descricao);
                         cmdUpdate.Parameters.AddWithValue("T_STATUS", this.Status);
-                        cmdUpdate.Parameters.AddWithValue("T_VALOR", this.Valor);
                         cmdUpdate.Parameters.AddWithValue("T_CODIGO", this.Codigo);
+                        cmdUpdate.Parameters.AddWithValue("T_CLINICA", CodigoClinica);
 
                         cmdUpdate.ExecuteNonQuery();
                     }
@@ -206,7 +200,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void Excluir(int Codigo)
+        public void Excluir(int Codigo, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -218,11 +212,13 @@ namespace gestaoclinica.Models
                                         FROM
                                         TRATAMENTO
                                         WHERE
-                                        T_CODIGO =@T_CODIGO";
+                                        T_CODIGO =@T_CODIGO AND
+                                        T_CLINICA =@T_CLINICA";
 
                     using (FbCommand cmdDelete = new FbCommand(TxtSQL, Con))
                     {
                         cmdDelete.Parameters.AddWithValue("T_CODIGO", Codigo);
+                        cmdDelete.Parameters.AddWithValue("T_CLINICA", CodigoClinica);
 
                         cmdDelete.ExecuteNonQuery();
                     }
@@ -281,5 +277,6 @@ namespace gestaoclinica.Models
                 return "Inativo";
             }
         }
+
     }
 }

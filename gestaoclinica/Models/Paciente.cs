@@ -67,7 +67,7 @@ namespace gestaoclinica.Models
 
         public Paciente() { }
 
-        public Paciente(int Codigo) 
+        public Paciente(int Codigo, int CodigoClinica) 
         {
             using (FbConnection Conexao = new FbConnection(gestaoclinica.Models.Firebird.StringConexao))
             {
@@ -80,11 +80,13 @@ namespace gestaoclinica.Models
                                         FROM
                                         PACIENTE
                                         WHERE
-                                        P_CODIGO =@P_CODIGO";
+                                        P_CODIGO =@P_CODIGO AND
+                                        P_CLINICA =@P_CLINICA";
 
                     using (FbCommand cmdSelect = new FbCommand(TxtSQL, Conexao))
                     {
                         cmdSelect.Parameters.AddWithValue("P_CODIGO", Codigo);
+                        cmdSelect.Parameters.AddWithValue("P_CLINICA", CodigoClinica);
 
                         using (FbDataReader drSelect = cmdSelect.ExecuteReader())
                         {
@@ -127,7 +129,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void Cadastrar(Paciente p)
+        public void Cadastrar(Paciente p, int CodigoClinica)
         {
             using (FbConnection Conexao = new FbConnection(gestaoclinica.Models.Firebird.StringConexao))
             {
@@ -153,7 +155,8 @@ namespace gestaoclinica.Models
                                             P_CELULAR,
                                             P_EMAIL,
                                             P_CIDADE,
-                                            P_CONVENIO 
+                                            P_CONVENIO,
+                                            P_CLINICA
                                         )
                                         VALUES
                                         (
@@ -173,16 +176,17 @@ namespace gestaoclinica.Models
                                             @P_CELULAR,
                                             @P_EMAIL,
                                             @P_CIDADE,
-                                            @P_CONVENIO
+                                            @P_CONVENIO,
+                                            @P_CLINICA
                                         )";
 
                     Conexao.Open();
 
                     using (FbCommand cmdInsert = new FbCommand(TxtSQL, Conexao))
                     {
-                        int CodigoPaciente = this.GerarCodigo();
+                        this.Codigo = this.GerarCodigo();
 
-                        cmdInsert.Parameters.AddWithValue("P_CODIGO", CodigoPaciente);
+                        cmdInsert.Parameters.AddWithValue("P_CODIGO", this.Codigo);
                         cmdInsert.Parameters.AddWithValue("P_NOME", p.Nome);
                         cmdInsert.Parameters.AddWithValue("P_SEXO", p.Sexo);
                         cmdInsert.Parameters.AddWithValue("P_DATANASCIMENTO", p.DataNascimento);
@@ -225,11 +229,13 @@ namespace gestaoclinica.Models
                             cmdInsert.Parameters.AddWithValue("P_CONVENIO", null);
                         }
 
+                        cmdInsert.Parameters.AddWithValue("P_CLINICA", CodigoClinica);
+
                         cmdInsert.ExecuteNonQuery();
 
                         Prontuario Prontuario = new Prontuario();
 
-                        Prontuario.Cadastrar(CodigoPaciente);
+                        Prontuario.Cadastrar(this.Codigo, CodigoClinica);
                     }
                 }
                 finally
@@ -239,7 +245,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void Atualizar(Paciente p)
+        public void Atualizar(Paciente p, int CodigoClinica)
         {
             using (FbConnection Conexao = new FbConnection(gestaoclinica.Models.Firebird.StringConexao))
             {
@@ -266,7 +272,8 @@ namespace gestaoclinica.Models
                                         P_CIDADE =@P_CIDADE,
                                         P_CONVENIO =@P_CONVENIO
                                         WHERE
-                                        P_CODIGO =@P_CODIGO"; 
+                                        P_CODIGO =@P_CODIGO AND
+                                        P_CLINICA =@P_CLINICA"; 
                                         
 
                     Conexao.Open();
@@ -316,6 +323,8 @@ namespace gestaoclinica.Models
                             cmdUpdate.Parameters.AddWithValue("P_CONVENIO", null);
                         }
 
+                        cmdUpdate.Parameters.AddWithValue("P_CLINICA", CodigoClinica);
+
                         cmdUpdate.ExecuteNonQuery();
                     }
                 }
@@ -326,7 +335,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void Excluir(Paciente p)
+        public void Excluir(Paciente p, int CodigoClinica)
         {
             using (FbConnection Conexao = new FbConnection(Firebird.StringConexao))
             {
@@ -334,11 +343,12 @@ namespace gestaoclinica.Models
                 {
                     Conexao.Open();
 
-                    string TxtSQL = @"DELETE FROM PACIENTE WHERE P_CODIGO =@P_CODIGO";
+                    string TxtSQL = @"DELETE FROM PACIENTE WHERE P_CODIGO =@P_CODIGO AND P_CLINICA =@P_CLINICA";
 
                     using (FbCommand cmdDelete = new FbCommand(TxtSQL, Conexao))
                     {
                         cmdDelete.Parameters.AddWithValue("P_CODIGO", p.Codigo);
+                        cmdDelete.Parameters.AddWithValue("P_CLINICA", CodigoClinica);
 
                         cmdDelete.ExecuteNonQuery();
                     }
@@ -386,7 +396,7 @@ namespace gestaoclinica.Models
 
         }
 
-        public List<Paciente> ObterPacientes(string Nome = "")
+        public List<Paciente> ObterPacientes(int CodigoClinica, string Nome = "")
         {
             List<Paciente> Pacientes = new List<Paciente>();
 
@@ -399,7 +409,7 @@ namespace gestaoclinica.Models
                                         FROM
                                         PACIENTE
                                         WHERE
-                                        1=1 ";
+                                        P_CLINICA =@P_CLINICA ";
 
                     if (Nome != "")
                     {
@@ -410,9 +420,11 @@ namespace gestaoclinica.Models
 
                     using (FbCommand cmdSelect = new FbCommand(TxtSQL, Conexao))
                     {
+                        cmdSelect.Parameters.AddWithValue("P_CLINICA", CodigoClinica);
+
                         if (Nome != "")
                         {
-                            cmdSelect.Parameters.Add("P_NOME", string.Concat("%", Nome.ToUpper(), "%"));
+                            cmdSelect.Parameters.AddWithValue("P_NOME", string.Concat("%", Nome.ToUpper(), "%"));
                         }
 
                         using (FbDataReader drSelect = cmdSelect.ExecuteReader())
@@ -454,11 +466,11 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void CarregarAgendamentos()
+        public void CarregarAgendamentos(int CodigoClinica, int CodigoProfissional = 0)
         {
             Agenda a = new Agenda();
 
-            this.Agendamentos = a.ObterAgendamentos(this.Codigo);
+            this.Agendamentos = a.ObterAgendamentos(CodigoClinica, this.Codigo, CodigoProfissional);
         }
 
     }

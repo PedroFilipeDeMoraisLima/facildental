@@ -15,7 +15,7 @@ namespace gestaoclinica.Controllers
         {
             Tratamento Tratamento = new Tratamento();
 
-            ViewBag.Tratamentos = Tratamento.ObterTratamentos(pesquisa);
+            ViewBag.Tratamentos = Tratamento.ObterTratamentos(ObterCodigoClinicaUsuarioLogado(), pesquisa);
 
             return View();
         }
@@ -30,7 +30,7 @@ namespace gestaoclinica.Controllers
         [Route("Tratamento/Detalhe/{Codigo}")]
         public ActionResult Detalhe(int Codigo)
         {
-            Tratamento Tratamento = new Tratamento(Codigo);
+            Tratamento Tratamento = new Tratamento(Codigo, ObterCodigoClinicaUsuarioLogado());
 
             ViewBag.Tratamento = Tratamento;
 
@@ -41,7 +41,7 @@ namespace gestaoclinica.Controllers
         [Route("Tratamento/Exclusao/{Codigo}")]
         public ActionResult Exclusao(int Codigo)
         {
-            Tratamento Tratamento = new Tratamento(Codigo);
+            Tratamento Tratamento = new Tratamento(Codigo, ObterCodigoClinicaUsuarioLogado());
 
             ViewBag.Tratamento = Tratamento;
 
@@ -52,7 +52,7 @@ namespace gestaoclinica.Controllers
         [Route("Tratamento/Edicao/{Codigo}")]
         public ActionResult Edicao(int Codigo)
         {
-            Tratamento Tratamento = new Tratamento(Codigo);
+            Tratamento Tratamento = new Tratamento(Codigo, ObterCodigoClinicaUsuarioLogado());
 
             ViewBag.Tratamento = Tratamento;
 
@@ -66,7 +66,7 @@ namespace gestaoclinica.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    Tratamento.Cadastrar();
+                    Tratamento.Cadastrar(ObterCodigoClinicaUsuarioLogado());
 
                     TempData["MsgSucesso"] = "Tratamento cadastrado com sucesso.";
 
@@ -92,7 +92,7 @@ namespace gestaoclinica.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    Tratamento.Atualizar();
+                    Tratamento.Atualizar(ObterCodigoClinicaUsuarioLogado());
 
                     TempData["MsgSucesso"] = "Tratamento atualizado com sucesso.";
 
@@ -120,7 +120,7 @@ namespace gestaoclinica.Controllers
             {
                 Tratamento Tratamento = new Tratamento();
 
-                Tratamento.Excluir(Codigo);
+                Tratamento.Excluir(Codigo, ObterCodigoClinicaUsuarioLogado());
 
                 TempData["MsgSucesso"] = "Tratamento excluido com sucesso.";
 
@@ -133,5 +133,11 @@ namespace gestaoclinica.Controllers
                 return RedirectToAction("Exclusao", "Tratamento");
             }
         }
+
+        private int ObterCodigoClinicaUsuarioLogado()
+        {
+            return int.Parse(Session["CodigoClinica"].ToString());
+        }
+
     }
 }

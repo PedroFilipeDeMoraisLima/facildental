@@ -41,23 +41,27 @@
 
         <br />
 
+        <button type="button" class="btn btn-primary btn-sm" title="Editar dados do paciente" onclick="location.href='@Url.Action("Edicao", "Paciente", new { ViewBag.Prontuario.Paciente.Codigo })'"><i class="fas fa-edit"></i> Editar</button>
+
+        <hr />
+
         <div class="row">
             <div class="col-md-5">
                 <div class="form-group">
                     @Html.LabelFor(model => model.Paciente.Nome, "Nome *")
-                    @Html.TextBoxFor(model => model.Paciente.Nome, new { @class = "form-control", required = "required", @Value = ViewBag.Prontuario.Paciente.Nome })
+                    @Html.TextBoxFor(model => model.Paciente.Nome, new { @class = "form-control", @disabled = "disabled", @Value = ViewBag.Prontuario.Paciente.Nome })
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="form-group">
                     @Html.LabelFor(model => model.Paciente.CPF, "CPF *")
-                    @Html.TextBoxFor(model => model.Paciente.CPF, new { @class = "form-control", required = "required", @Value = ViewBag.Prontuario.Paciente.CPF })
+                    @Html.TextBoxFor(model => model.Paciente.CPF, new { @class = "form-control", @disabled = "disabled", @Value = ViewBag.Prontuario.Paciente.CPF })
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="form-group">
                     @Html.LabelFor(model => model.Paciente.RG, "RG *")
-                    @Html.TextBoxFor(model => model.Paciente.RG, new { @class = "form-control", required = "required", @Value = ViewBag.Prontuario.Paciente.RG })
+                    @Html.TextBoxFor(model => model.Paciente.RG, new { @class = "form-control", @disabled = "disabled", @Value = ViewBag.Prontuario.Paciente.RG })
                 </div>
             </div>
             <div class="col-md-3">
@@ -66,20 +70,20 @@
 
                     @if (ViewBag.Prontuario.Paciente.Sexo == "M")
                     {
-                        <label>Masculino</label> @Html.RadioButtonFor(model => model.Paciente.Sexo, value: "M", htmlAttributes: new { @checked = "true" })
+                        <label>Masculino</label> @Html.RadioButtonFor(model => model.Paciente.Sexo, value: "M", htmlAttributes: new { @checked = "true", @disabled = "disabled" })
                     }
                     else
                     {
-                        <label>Masculino</label> @Html.RadioButtonFor(model => model.Paciente.Sexo, value: "M")
+                        <label>Masculino</label> @Html.RadioButtonFor(model => model.Paciente.Sexo, value: "M", htmlAttributes: new { @disabled = "disabled" })
                     }
 
                     @if (ViewBag.Prontuario.Paciente.Sexo == "F")
                     {
-                        <label>Feminino</label> @Html.RadioButtonFor(model => model.Paciente.Sexo, value: "F", htmlAttributes: new { @checked = "true" })
+                        <label>Feminino</label> @Html.RadioButtonFor(model => model.Paciente.Sexo, value: "F", htmlAttributes: new { @checked = "true", @disabled = "disabled" })
                     }
                     else
                     {
-                        <label>Feminino</label> @Html.RadioButtonFor(model => model.Paciente.Sexo, value: "F")
+                        <label>Feminino</label> @Html.RadioButtonFor(model => model.Paciente.Sexo, value: "F", htmlAttributes: new { @disabled = "disabled" })
                     }
                 </div>
             </div>
@@ -91,7 +95,7 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.Paciente.DataNascimento, "Nascimento *")
 
-                    @Html.TextBoxFor(model => model.Paciente.DataNascimento, new { @class = "form-control", required = "required", @Value = ViewBag.Prontuario.Paciente.DataNascimento.ToString("dd/MM/yyyy") })
+                    @Html.TextBoxFor(model => model.Paciente.DataNascimento, new { @class = "form-control", @disabled = "disabled", @Value = ViewBag.Prontuario.Paciente.DataNascimento.ToString("dd/MM/yyyy") })
                 </div>
             </div>
 
@@ -102,7 +106,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1"><i class="fas fa-envelope"></i></span>
                         </div>
-                        @Html.TextBoxFor(model => model.Paciente.Email, new { @class = "form-control", @type = "email", @Value = ViewBag.Prontuario.Paciente.Email })
+                        @Html.TextBoxFor(model => model.Paciente.Email, new { @class = "form-control", @type = "email", @disabled = "disabled", @Value = ViewBag.Prontuario.Paciente.Email })
                     </div>
                 </div>
             </div>
@@ -114,7 +118,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1"><i class="fas fa-phone"></i></span>
                         </div>
-                        @Html.TextBoxFor(model => model.Paciente.Celular, new { @class = "form-control", required = "required", @Value = ViewBag.Prontuario.Paciente.Celular })
+                        @Html.TextBoxFor(model => model.Paciente.Celular, new { @class = "form-control", required = "required", @disabled = "disabled", @Value = ViewBag.Prontuario.Paciente.Celular })
                     </div>
                 </div>
             </div>
@@ -126,7 +130,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1"><i class="fas fa-phone"></i></span>
                         </div>
-                        @Html.TextBoxFor(model => model.Paciente.TelefoneComercial, new { @class = "form-control", @Value = ViewBag.Prontuario.Paciente.TelefoneComercial })
+                        @Html.TextBoxFor(model => model.Paciente.TelefoneComercial, new { @class = "form-control", @disabled = "disabled", @Value = ViewBag.Prontuario.Paciente.TelefoneComercial })
                     </div>
                 </div>
             </div>
@@ -138,19 +142,19 @@
             <div class="col-md-3">
                 <div class="form-group">
                     @Html.Label("UF")
-                    @Html.TextBox("UF", null, new { @Value = ViewBag.UFPaciente.Sigla + " (" + ViewBag.UFPaciente.Descricao + ")", @class = "form-control" })
+                    @Html.TextBox("UF", null, new { @Value = ViewBag.UFPaciente.Sigla + " (" + ViewBag.UFPaciente.Descricao + ")", @class = "form-control", @disabled = "disabled" })
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
                     @Html.LabelFor(model => model.Paciente.CodigoCidade, "Cidade")
-                    @Html.TextBoxFor(model => model.Paciente.CodigoCidade, new { @class = "form-control", @Value = ViewBag.CidadePaciente.Descricao })
+                    @Html.TextBoxFor(model => model.Paciente.CodigoCidade, new { @class = "form-control", @Value = ViewBag.CidadePaciente.Descricao, @disabled = "disabled" })
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     @Html.LabelFor(model => model.Paciente.Endereco)
-                    @Html.TextBoxFor(model => model.Paciente.Endereco, new { @class = "form-control", @Value = ViewBag.Prontuario.Paciente.Endereco })
+                    @Html.TextBoxFor(model => model.Paciente.Endereco, new { @class = "form-control", @Value = ViewBag.Prontuario.Paciente.Endereco, @disabled = "disabled" })
                 </div>
             </div>
         </div>
@@ -159,19 +163,19 @@
             <div class="col-md-4">
                 <div class="form-group">
                     @Html.LabelFor(model => model.Paciente.Bairro)
-                    @Html.TextBoxFor(model => model.Paciente.Bairro, new { @class = "form-control", @Value = ViewBag.Prontuario.Paciente.Bairro })
+                    @Html.TextBoxFor(model => model.Paciente.Bairro, new { @class = "form-control", @Value = ViewBag.Prontuario.Paciente.Bairro, @disabled = "disabled" })
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="form-group">
                     @Html.LabelFor(model => model.Paciente.NumeroEndereco, "Número")
-                    @Html.TextBoxFor(model => model.Paciente.NumeroEndereco, new { @class = "form-control", @Value = ViewBag.Prontuario.Paciente.NumeroEndereco })
+                    @Html.TextBoxFor(model => model.Paciente.NumeroEndereco, new { @class = "form-control", @Value = ViewBag.Prontuario.Paciente.NumeroEndereco, @disabled = "disabled" })
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-group">
                     @Html.LabelFor(model => model.Paciente.ComplementoEndereco, "Complemento")
-                    @Html.TextBoxFor(model => model.Paciente.ComplementoEndereco, new { @class = "form-control", @Value = ViewBag.Prontuario.Paciente.ComplementoEndereco })
+                    @Html.TextBoxFor(model => model.Paciente.ComplementoEndereco, new { @class = "form-control", @Value = ViewBag.Prontuario.Paciente.ComplementoEndereco, @disabled = "disabled" })
                 </div>
             </div>
         </div>
@@ -180,6 +184,10 @@
     <div class="tab-pane fade" id="nav-agendamento" role="tabpanel" aria-labelledby="nav-agendamento-tab">
 
         <br />
+
+        <button type="button" class="btn btn-primary btn-sm" title="Editar dados do paciente" onclick="location.href='@Url.Action("Index", "Agenda")'"><i class="fas fa-calendar-alt"></i> Acessar Agenda</button>
+
+        <br /><br />
 
         <div class="table-responsive">
             <table class="table table-hover" id="tbAgendamentos">
@@ -199,7 +207,7 @@
                         {
                             <tr>
                                 <th scope="row" data-id=@Agenda.Codigo>@Agenda.Codigo</th>
-                                <td>@Agenda.Tratamento.DescricaoComValor</td>
+                                <td>@Agenda.Tratamento.Descricao</td>
                                 <td>@Agenda.DataHoraInicial.ToString("dd/MM/yyyy HH:mm:ss")</td>
                                 <td>@Agenda.DataHoraFinal.ToString("dd/MM/yyyy HH:mm:ss")</td>
                                 <td>@Agenda.Status</td>
@@ -366,8 +374,6 @@
     <script type="text/javascript">
 
         $().ready(function () {
-            $("#nav-dados :input").prop("disabled", true);
-
             $("#tbAgendamentos tr").click(function(){
                 
                 var idAgendamento = $(this).find('th[data-id]').data('id');

@@ -31,7 +31,7 @@ namespace gestaoclinica.Models
 
         public Evolucao() { }
 
-        public Evolucao(int Codigo)
+        public Evolucao(int Codigo, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -46,13 +46,15 @@ namespace gestaoclinica.Models
                                         INNER JOIN USUARIO U
                                         ON (E.E_PROFISSIONAL = U.U_CODIGO)
                                         WHERE
-                                        E_CODIGO =@E_CODIGO";
+                                        E_CODIGO =@E_CODIGO AND
+                                        E_CLINICA =@E_CLINICA";
 
                     Con.Open();
 
                     using (FbCommand cmdSelect = new FbCommand(TxtSQL, Con))
                     {
                         cmdSelect.Parameters.AddWithValue("E_CODIGO", Codigo);
+                        cmdSelect.Parameters.AddWithValue("E_CLINICA", CodigoClinica);
 
                         using (FbDataReader drSelect = cmdSelect.ExecuteReader())
                         {
@@ -83,7 +85,7 @@ namespace gestaoclinica.Models
             
         }
 
-        public void Cadastrar(Evolucao e)
+        public void Cadastrar(Evolucao e, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -104,7 +106,8 @@ namespace gestaoclinica.Models
                                             E_HORAEVOLUCAO,
                                             E_DATAGRAVACAO,
                                             E_HORAGRAVACAO,
-                                            E_PROFISSIONAL
+                                            E_PROFISSIONAL,
+                                            E_CLINICA
                                         )
                                         VALUES
                                         (
@@ -115,7 +118,8 @@ namespace gestaoclinica.Models
                                             @E_HORAEVOLUCAO,
                                             @E_DATAGRAVACAO,
                                             @E_HORAGRAVACAO,
-                                            @E_PROFISSIONAL
+                                            @E_PROFISSIONAL,
+                                            @E_CLINICA
                                         )";
 
                     using (FbCommand cmdInsert = new FbCommand(TxtSQL, Con))
@@ -128,6 +132,7 @@ namespace gestaoclinica.Models
                         cmdInsert.Parameters.AddWithValue("E_DATAGRAVACAO", DataHoraAtual.Date);
                         cmdInsert.Parameters.AddWithValue("E_HORAGRAVACAO", DataHoraAtual.TimeOfDay);
                         cmdInsert.Parameters.AddWithValue("E_PROFISSIONAL", e.Profissional.Codigo);
+                        cmdInsert.Parameters.AddWithValue("E_CLINICA", CodigoClinica);
 
                         cmdInsert.ExecuteNonQuery();
                     }
@@ -139,7 +144,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void Atualizar(string NovaDescricao, int CodigoEvolucao)
+        public void Atualizar(string NovaDescricao, int CodigoEvolucao, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -158,6 +163,7 @@ namespace gestaoclinica.Models
                     {
                         cmdUpdate.Parameters.AddWithValue("E_DESCRICAO", NovaDescricao);
                         cmdUpdate.Parameters.AddWithValue("E_CODIGO", CodigoEvolucao);
+                        cmdUpdate.Parameters.AddWithValue("E_CLINICA", CodigoClinica);
 
                         cmdUpdate.ExecuteNonQuery();
                     }
@@ -205,7 +211,7 @@ namespace gestaoclinica.Models
 
         }
 
-        public List<Evolucao> ObterEvolucoesPorProntuario(int CodigoProntuario)
+        public List<Evolucao> ObterEvolucoesPorProntuario(int CodigoProntuario, int CodigoClinica)
         {
             List<Evolucao> Evolucoes = new List<Evolucao>();
 
@@ -224,13 +230,15 @@ namespace gestaoclinica.Models
                                         INNER JOIN USUARIO U
                                         ON (E.E_PROFISSIONAL = U.U_CODIGO)
                                         WHERE
-                                        E_PRONTUARIO =@E_PRONTUARIO
+                                        E_PRONTUARIO =@E_PRONTUARIO AND
+                                        E_CLINICA =@E_CLINICA
                                         ORDER BY
                                         E_CODIGO DESC";
 
                     using (FbCommand cmdSelect = new FbCommand(TxtSQL, Con))
                     {
                         cmdSelect.Parameters.AddWithValue("E_PRONTUARIO", CodigoProntuario);
+                        cmdSelect.Parameters.AddWithValue("E_CLINICA", CodigoClinica);
 
                         using (FbDataReader drSelect = cmdSelect.ExecuteReader())
                         {

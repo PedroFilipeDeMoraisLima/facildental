@@ -16,7 +16,7 @@ namespace gestaoclinica.Controllers
         {
             Paciente p = new Paciente();
 
-            ViewBag.Pacientes = p.ObterPacientes(pesquisa);
+            ViewBag.Pacientes = p.ObterPacientes(ObterCodigoClinicaUsuarioLogado(), pesquisa);
             
             return View();
         }
@@ -24,7 +24,7 @@ namespace gestaoclinica.Controllers
         [Route("Paciente/Detalhe/{Codigo}")] [HttpGet]
         public ActionResult Detalhe(int Codigo)
         {
-            Paciente Paciente = new Paciente(Codigo);
+            Paciente Paciente = new Paciente(Codigo, ObterCodigoClinicaUsuarioLogado());
 
             Cidade CidadePaciente = new Cidade(Paciente.CodigoCidade);
 
@@ -55,7 +55,7 @@ namespace gestaoclinica.Controllers
         [HttpGet]
         public ActionResult Edicao(int Codigo)
         {
-            Paciente Paciente = new Paciente(Codigo);
+            Paciente Paciente = new Paciente(Codigo, ObterCodigoClinicaUsuarioLogado());
 
             ViewBag.Paciente = Paciente;
 
@@ -76,7 +76,7 @@ namespace gestaoclinica.Controllers
         [HttpGet]
         public ActionResult Exclusao(int Codigo)
         {
-            Paciente Paciente = new Paciente(Codigo);
+            Paciente Paciente = new Paciente(Codigo, ObterCodigoClinicaUsuarioLogado());
 
             Cidade CidadePaciente = new Cidade(Paciente.CodigoCidade);
 
@@ -96,11 +96,11 @@ namespace gestaoclinica.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    p.Cadastrar(p);
+                    p.Cadastrar(p, ObterCodigoClinicaUsuarioLogado());
 
                     TempData["MsgSucesso"] = "Paciente cadastrado com sucesso.";
 
-                    return RedirectToAction("Index", "Paciente");
+                    return RedirectToAction("Detalhe", "Prontuario", new { Codigo = p.Codigo });
                 }
                 else
                 {
@@ -120,7 +120,7 @@ namespace gestaoclinica.Controllers
             {
                 TempData["MsgErro"] = e.Message;
 
-                return RedirectToAction("Index", "Paciente");
+                return RedirectToAction("Index", "Prontuario");
             }
 
         }
@@ -132,15 +132,15 @@ namespace gestaoclinica.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    p.Atualizar(p);
+                    p.Atualizar(p, ObterCodigoClinicaUsuarioLogado());
 
                     TempData["MsgSucesso"] = "Alterações realizadas com sucesso.";
 
-                    return RedirectToAction("Index", "Paciente");
+                    return RedirectToAction("Detalhe", "Prontuario", new { Codigo = p.Codigo });
                 }
                 else
                 {
-                    Paciente Paciente = new Paciente(p.Codigo);
+                    Paciente Paciente = new Paciente(p.Codigo, ObterCodigoClinicaUsuarioLogado());
 
                     ViewBag.Paciente = Paciente;
 
@@ -171,17 +171,17 @@ namespace gestaoclinica.Controllers
         {
             try
             {
-                p.Excluir(p);
+                p.Excluir(p, ObterCodigoClinicaUsuarioLogado());
 
                 TempData["MsgSucesso"] = "Exclusão realizada com sucesso.";
 
-                return RedirectToAction("Index", "Paciente");
+                return RedirectToAction("Index", "Prontuario");
             }
             catch (Exception e)
             {
                 TempData["MsgErro"] = e.Message;
 
-                return RedirectToAction("Index", "Paciente");
+                return RedirectToAction("Index", "Prontuario");
             }
         }
 
@@ -194,6 +194,11 @@ namespace gestaoclinica.Controllers
             Cidades = Cidade.ObterCidadesPorUF(codigoUF);
 
             return Json(Cidades, JsonRequestBehavior.AllowGet);
+        }
+
+        private int ObterCodigoClinicaUsuarioLogado()
+        {
+            return int.Parse(Session["CodigoClinica"].ToString());
         }
 
     }

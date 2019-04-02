@@ -1649,6 +1649,13 @@
     <Content Include="Content\js\jquery-3.3.1.min.js" />
     <Content Include="Content\js\jquery_mask_class.js" />
     <Content Include="Content\js\jQuery_Mask_Plugin_v1.14.15.js" />
+    <Content Include="Content\js\select2-3.5.2\select2-bootstrap.css" />
+    <Content Include="Content\js\select2-3.5.2\select2-spinner.gif" />
+    <Content Include="Content\js\select2-3.5.2\select2.css" />
+    <Content Include="Content\js\select2-3.5.2\select2.js" />
+    <Content Include="Content\js\select2-3.5.2\select2.min.js" />
+    <Content Include="Content\js\select2-3.5.2\select2.png" />
+    <Content Include="Content\js\select2-3.5.2\select2x2.png" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -1658,6 +1665,7 @@
     <Compile Include="Controllers\AgendaController.cs" />
     <Compile Include="Controllers\CidadeController.cs" />
     <Compile Include="Controllers\ClinicaController.cs" />
+    <Compile Include="Controllers\ConvenioController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\MedicamentoController.cs" />
@@ -1674,6 +1682,7 @@
     <Compile Include="Models\AgendaJson.cs" />
     <Compile Include="Models\Cidade.cs" />
     <Compile Include="Models\Clinica.cs" />
+    <Compile Include="Models\Convenio.cs" />
     <Compile Include="Models\CorAgenda.cs" />
     <Compile Include="Models\Criptografia.cs" />
     <Compile Include="Models\Evolucao.cs" />
@@ -1776,6 +1785,17 @@
     <Content Include="Views\Usuario\Edicao_.cshtml" />
     <Content Include="Views\Usuario\Edicao.cshtml" />
     <Content Include="Views\Medicamento\Index.cshtml" />
+    <Content Include="Content\js\select2-3.5.2\.gitignore" />
+    <Content Include="Content\js\select2-3.5.2\bower.json" />
+    <Content Include="Content\js\select2-3.5.2\component.json" />
+    <Content Include="Content\js\select2-3.5.2\composer.json" />
+    <Content Include="Content\js\select2-3.5.2\CONTRIBUTING.md" />
+    <Content Include="Content\js\select2-3.5.2\LICENSE" />
+    <Content Include="Content\js\select2-3.5.2\package.json" />
+    <Content Include="Content\js\select2-3.5.2\README.md" />
+    <Content Include="Content\js\select2-3.5.2\release.sh" />
+    <Content Include="Content\js\select2-3.5.2\select2.jquery.json" />
+    <Content Include="Views\Convenio\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

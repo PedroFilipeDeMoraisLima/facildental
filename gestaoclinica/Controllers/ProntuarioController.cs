@@ -15,7 +15,7 @@ namespace gestaoclinica.Controllers
         {
             Paciente p = new Paciente();
 
-            ViewBag.Pacientes = p.ObterPacientes(pesquisa);
+            ViewBag.Pacientes = p.ObterPacientes(ObterCodigoClinicaUsuarioLogado(), pesquisa);
 
             return View();
         }
@@ -24,11 +24,11 @@ namespace gestaoclinica.Controllers
         [HttpGet]
         public ActionResult Detalhe(int Codigo)
         {
-            Prontuario p = new Prontuario(Codigo);
+            Prontuario p = new Prontuario(Codigo, ObterCodigoClinicaUsuarioLogado());
 
-            p.CarregarEvolucoes();
+            p.CarregarEvolucoes(ObterCodigoClinicaUsuarioLogado());
 
-            p.Paciente.CarregarAgendamentos();
+            p.Paciente.CarregarAgendamentos(ObterCodigoClinicaUsuarioLogado());
 
             ViewBag.Prontuario = p;
 
@@ -58,7 +58,7 @@ namespace gestaoclinica.Controllers
                 e.DataHoraEvolucao = DataHoraEvolucao;
                 e.Descricao = DescricaoEvolucao;
 
-                e.Cadastrar(e);
+                e.Cadastrar(e, ObterCodigoClinicaUsuarioLogado());
 
                 TempData["MsgSucesso"] = "Evolução do paciente cadastrada com sucesso.";
 

@@ -39,7 +39,7 @@ namespace gestaoclinica.Models
 
         public Agenda() { }
 
-        public List<Agenda> ObterAgendamentos(int CodigoPaciente = 0)
+        public List<Agenda> ObterAgendamentos(int CodigoClinica, int CodigoPaciente = 0, int CodigoProfissional = 0)
         {
             List<Agenda> Agendamentos = new List<Agenda>();
 
@@ -54,8 +54,14 @@ namespace gestaoclinica.Models
                                         FROM 
                                         AGENDA INNER JOIN PACIENTE ON (A_PACIENTE = P_CODIGO) 
                                         INNER JOIN TRATAMENTO ON (A_TRATAMENTO = T_CODIGO)
+                                        INNER JOIN USUARIO ON (A_PROFISSIONAL = U_CODIGO)
                                         WHERE
-                                        1=1 ";
+                                        A_CLINICA =@A_CLINICA ";
+
+                    if (CodigoProfissional != 0)
+                    {
+                        TxtSQL += "AND A_PROFISSIONAL =@A_PROFISSIONAL ";
+                    }
 
                     if (CodigoPaciente != 0)
                     {
@@ -66,10 +72,16 @@ namespace gestaoclinica.Models
 
                     using (FbCommand cmdSelect = new FbCommand(TxtSQL, Conexao))
                     {
+                        cmdSelect.Parameters.AddWithValue("A_CLINICA", CodigoClinica);
 
                         if (CodigoPaciente != 0)
                         {
                             cmdSelect.Parameters.AddWithValue("P_CODIGO", CodigoPaciente);
+                        }
+
+                        if (CodigoProfissional != 0)
+                        {
+                            cmdSelect.Parameters.AddWithValue("A_PROFISSIONAL", CodigoProfissional);
                         }
 
                         using (FbDataReader drSelect = cmdSelect.ExecuteReader())
@@ -93,12 +105,15 @@ namespace gestaoclinica.Models
                                 Agenda.Tratamento = new Models.Tratamento
                                 {
                                     Codigo = drSelect.GetInt32(drSelect.GetOrdinal("T_CODIGO")),
-                                    Descricao = drSelect.GetString(drSelect.GetOrdinal("T_DESCRICAO")),
-                                    DescricaoComValor = drSelect.GetString(drSelect.GetOrdinal("T_DESCRICAO"))
-                                        + " - " + "R$" + string.Format("{0:N}", drSelect.GetDecimal(drSelect.GetOrdinal("T_VALOR"))),
-                                    Valor = drSelect.GetDecimal(drSelect.GetOrdinal("T_VALOR"))
+                                    Descricao = drSelect.GetString(drSelect.GetOrdinal("T_DESCRICAO"))
                                 };
                                 Agenda.Status = ObterStatusVisaoUsuario(drSelect.GetString(drSelect.GetOrdinal("A_STATUS")));
+                                Agenda.Profissional = new Usuario()
+                                {
+                                    Codigo = drSelect.GetInt32(drSelect.GetOrdinal("U_CODIGO")),
+                                    Nome = drSelect.GetString(drSelect.GetOrdinal("U_NOME")),
+                                    Email = drSelect.GetString(drSelect.GetOrdinal("U_EMAIL"))
+                                };
 
                                 Agendamentos.Add(Agenda);
                             }
@@ -114,7 +129,7 @@ namespace gestaoclinica.Models
             return Agendamentos;
         }
 
-        public Agenda ObterAgendamentoPorCodigo(int Codigo)
+        public Agenda ObterAgendamentoPorCodigo(int Codigo, int CodigoClinica)
         {
             Agenda Agenda = new Agenda();
 
@@ -129,12 +144,15 @@ namespace gestaoclinica.Models
                                         FROM 
                                         AGENDA INNER JOIN PACIENTE ON (A_PACIENTE = P_CODIGO) 
                                         INNER JOIN TRATAMENTO ON (A_TRATAMENTO = T_CODIGO)
+                                        INNER JOIN USUARIO ON (A_PROFISSIONAL = U_CODIGO)
                                         WHERE
-                                        A_CODIGO =@A_CODIGO";
+                                        A_CODIGO =@A_CODIGO AND
+                                        A_CLINICA =@A_CLINICA";
 
                     using (FbCommand cmdSelect = new FbCommand(TxtSQL, Conexao))
                     {
                         cmdSelect.Parameters.AddWithValue("A_CODIGO", Codigo);
+                        cmdSelect.Parameters.AddWithValue("A_CLINICA", CodigoClinica);
 
                         using (FbDataReader drSelect = cmdSelect.ExecuteReader())
                         {
@@ -156,10 +174,15 @@ namespace gestaoclinica.Models
                                 Agenda.Tratamento = new Models.Tratamento
                                 {
                                     Codigo = drSelect.GetInt32(drSelect.GetOrdinal("T_CODIGO")),
-                                    Descricao = drSelect.GetString(drSelect.GetOrdinal("T_DESCRICAO")),
-                                    Valor = drSelect.GetDecimal(drSelect.GetOrdinal("T_VALOR"))
+                                    Descricao = drSelect.GetString(drSelect.GetOrdinal("T_DESCRICAO"))
                                 };
                                 Agenda.Status = drSelect.GetString(drSelect.GetOrdinal("A_STATUS"));
+                                Agenda.Profissional = new Usuario()
+                                {
+                                    Codigo = drSelect.GetInt32(drSelect.GetOrdinal("U_CODIGO")),
+                                    Nome = drSelect.GetString(drSelect.GetOrdinal("U_NOME")),
+                                    Email = drSelect.GetString(drSelect.GetOrdinal("U_EMAIL"))
+                                };
                             }
                         }
                     }
@@ -173,7 +196,7 @@ namespace gestaoclinica.Models
             return Agenda;
         }
 
-        public void Cadastrar()
+        public void Cadastrar(int CodigoClinica)
         {
             using (FbConnection Conexao = new FbConnection(Firebird.StringConexao))
             {
@@ -198,7 +221,9 @@ namespace gestaoclinica.Models
                                             A_BGCOLOR,
                                             A_TEXTCOLOR,
                                             A_TRATAMENTO,
-                                            A_STATUS
+                                            A_STATUS,
+                                            A_CLINICA,
+                                            A_PROFISSIONAL
                                         )
                                         VALUES
                                         (
@@ -211,7 +236,9 @@ namespace gestaoclinica.Models
                                             @A_BGCOLOR,
                                             @A_TEXTCOLOR,
                                             @A_TRATAMENTO,
-                                            @A_STATUS
+                                            @A_STATUS,
+                                            @A_CLINICA,
+                                            @A_PROFISSIONAL
                                         )";
 
                     using (FbCommand cmdInsert = new FbCommand(TxtSQL, Conexao))
@@ -226,6 +253,8 @@ namespace gestaoclinica.Models
                         cmdInsert.Parameters.AddWithValue("A_TEXTCOLOR", CorAgenda.Fonte);
                         cmdInsert.Parameters.AddWithValue("A_TRATAMENTO", this.Tratamento.Codigo);
                         cmdInsert.Parameters.AddWithValue("A_STATUS", "1");
+                        cmdInsert.Parameters.AddWithValue("A_CLINICA", CodigoClinica);
+                        cmdInsert.Parameters.AddWithValue("A_PROFISSIONAL", this.Profissional.Codigo);
 
                         cmdInsert.ExecuteNonQuery();
                     }
@@ -237,7 +266,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void Atualizar()
+        public void Atualizar(int CodigoClinica)
         {
             using (FbConnection Conexao = new FbConnection(Firebird.StringConexao))
             {
@@ -255,7 +284,8 @@ namespace gestaoclinica.Models
                                         A_HORAFINAL =@A_HORAFINAL,
                                         A_TRATAMENTO =@A_TRATAMENTO
                                         WHERE
-                                        A_CODIGO =@A_CODIGO";
+                                        A_CODIGO =@A_CODIGO AND
+                                        A_CLINICA =@A_CLINICA";
                     
                     using (FbCommand cmdUpdate = new FbCommand(TxtSQL, Conexao))
                     {
@@ -266,6 +296,7 @@ namespace gestaoclinica.Models
                         cmdUpdate.Parameters.AddWithValue("A_DATAFINAL", this.DataHoraFinal.Date);
                         cmdUpdate.Parameters.AddWithValue("A_HORAFINAL", this.DataHoraFinal.TimeOfDay);
                         cmdUpdate.Parameters.AddWithValue("A_TRATAMENTO", this.Tratamento.Codigo);
+                        cmdUpdate.Parameters.AddWithValue("A_CLINICA", CodigoClinica);
 
                         cmdUpdate.ExecuteNonQuery();
                     }
@@ -277,7 +308,8 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void Atualizar(int Codigo, DateTime DataHoraInicial, DateTime DataHoraFinal, int CodigoTratamento, string StatusAgendamento)
+        public void Atualizar(int Codigo, DateTime DataHoraInicial, DateTime DataHoraFinal, int CodigoTratamento, 
+            string StatusAgendamento, int CodigoProfissional, int CodigoClinica)
         {
             using (FbConnection Conexao = new FbConnection(Firebird.StringConexao))
             {
@@ -293,19 +325,23 @@ namespace gestaoclinica.Models
                                         A_DATAFINAL =@A_DATAFINAL,
                                         A_HORAFINAL =@A_HORAFINAL,
                                         A_TRATAMENTO =@A_TRATAMENTO,
-                                        A_STATUS =@A_STATUS
+                                        A_STATUS =@A_STATUS,
+                                        A_PROFISSIONAL =@A_PROFISSIONAL
                                         WHERE
-                                        A_CODIGO =@A_CODIGO";
+                                        A_CODIGO =@A_CODIGO AND
+                                        A_CLINICA =@A_CLINICA";
 
                     using (FbCommand cmdUpdate = new FbCommand(TxtSQL, Conexao))
                     {
                         cmdUpdate.Parameters.AddWithValue("A_CODIGO", Codigo);
+                        cmdUpdate.Parameters.AddWithValue("A_CLINICA", CodigoClinica);
                         cmdUpdate.Parameters.AddWithValue("A_DATAINICIAL", DataHoraInicial.Date);
                         cmdUpdate.Parameters.AddWithValue("A_HORAINICIAL", DataHoraInicial.TimeOfDay);
                         cmdUpdate.Parameters.AddWithValue("A_DATAFINAL", DataHoraFinal.Date);
                         cmdUpdate.Parameters.AddWithValue("A_HORAFINAL", DataHoraFinal.TimeOfDay);
                         cmdUpdate.Parameters.AddWithValue("A_TRATAMENTO", CodigoTratamento);
                         cmdUpdate.Parameters.AddWithValue("A_STATUS", StatusAgendamento);
+                        cmdUpdate.Parameters.AddWithValue("A_PROFISSIONAL", CodigoProfissional);
 
                         cmdUpdate.ExecuteNonQuery();
                     }
@@ -317,7 +353,7 @@ namespace gestaoclinica.Models
             }
         }
 
-        public void AtualizarStatus(int Codigo, string NovoStatus)
+        public void AtualizarStatus(int Codigo, string NovoStatus, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -330,12 +366,14 @@ namespace gestaoclinica.Models
                                         SET
                                         A_STATUS =@A_STATUS 
                                         WHERE
-                                        A_CODIGO =@A_CODIGO";
+                                        A_CODIGO =@A_CODIGO AND
+                                        A_CLINICA =@A_CLINICA";
 
                     using (FbCommand cmdUpdate = new FbCommand(TxtSQL, Con))
                     {
                         cmdUpdate.Parameters.AddWithValue("A_STATUS", NovoStatus);
                         cmdUpdate.Parameters.AddWithValue("A_CODIGO", Codigo);
+                        cmdUpdate.Parameters.AddWithValue("A_CLINICA", CodigoClinica);
 
                         cmdUpdate.ExecuteNonQuery();
                     }
@@ -348,7 +386,7 @@ namespace gestaoclinica.Models
 
         }
 
-        public void Excluir(int Codigo)
+        public void Excluir(int Codigo, int CodigoClinica)
         {
             using (FbConnection Con = new FbConnection(Firebird.StringConexao))
             {
@@ -360,11 +398,13 @@ namespace gestaoclinica.Models
                                         FROM
                                         AGENDA
                                         WHERE
-                                        A_CODIGO =@A_CODIGO";
+                                        A_CODIGO =@A_CODIGO AND
+                                        A_CLINICA =@A_CLINICA";
 
                     using (FbCommand cmdDelete = new FbCommand(TxtSQL, Con))
                     {
                         cmdDelete.Parameters.AddWithValue("A_CODIGO", Codigo);
+                        cmdDelete.Parameters.AddWithValue("A_CLINICA", CodigoClinica);
 
                         cmdDelete.ExecuteNonQuery();
                     }

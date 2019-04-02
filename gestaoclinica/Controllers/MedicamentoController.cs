@@ -14,7 +14,7 @@ namespace gestaoclinica.Controllers
         {
             Medicamento m = new Medicamento();
 
-            ViewBag.Medicamentos = m.ObterMedicamentos(pesquisa);
+            ViewBag.Medicamentos = m.ObterMedicamentos(ObterCodigoClinicaUsuarioLogado(), pesquisa);
             
             return View();
         }
@@ -27,7 +27,7 @@ namespace gestaoclinica.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    m.Cadastrar(m);
+                    m.Cadastrar(m, ObterCodigoClinicaUsuarioLogado());
 
                     TempData["MsgSucesso"] = "Medicamento cadastrado com sucesso.";
 
@@ -37,7 +37,7 @@ namespace gestaoclinica.Controllers
                 {
                     Medicamento MedicamentoView = new Medicamento();
 
-                    ViewBag.Medicamentos = MedicamentoView.ObterMedicamentos();
+                    ViewBag.Medicamentos = MedicamentoView.ObterMedicamentos(ObterCodigoClinicaUsuarioLogado());
 
                     return View("Index");
                 }
@@ -58,7 +58,7 @@ namespace gestaoclinica.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    m.Atualizar(m);
+                    m.Atualizar(m, ObterCodigoClinicaUsuarioLogado());
 
                     TempData["MsgSucesso"] = "Medicamento atualizado com sucesso.";
 
@@ -68,7 +68,7 @@ namespace gestaoclinica.Controllers
                 {
                     Medicamento MedicamentoView = new Medicamento();
 
-                    ViewBag.Medicamentos = MedicamentoView.ObterMedicamentos();
+                    ViewBag.Medicamentos = MedicamentoView.ObterMedicamentos(ObterCodigoClinicaUsuarioLogado());
 
                     return View("Index");
                 }
@@ -89,7 +89,7 @@ namespace gestaoclinica.Controllers
             {
                 Medicamento m = new Medicamento();
 
-                m.Excluir(Codigo);
+                m.Excluir(Codigo, ObterCodigoClinicaUsuarioLogado());
 
                 TempData["MsgSucesso"] = "Medicamento excluido com sucesso.";
 
@@ -106,9 +106,15 @@ namespace gestaoclinica.Controllers
         [HttpGet]
         public JsonResult ObterMedicamentoJson(int Codigo)
         {
-            Medicamento m = new Medicamento(Codigo);
+            Medicamento m = new Medicamento(Codigo, ObterCodigoClinicaUsuarioLogado());
 
             return Json(m, JsonRequestBehavior.AllowGet);
         }
+
+        private int ObterCodigoClinicaUsuarioLogado()
+        {
+            return int.Parse(Session["CodigoClinica"].ToString());
+        }
+
     }
 }

@@ -10,10 +10,6 @@
         @Html.TextBoxFor(model => model.Descricao, new { @class = "form-control", required = "required", @readonly = "readonly", @Value = ViewBag.Tratamento.Descricao })
     </div>
     <div class="col-3">
-        @Html.LabelFor(model => model.Valor, "Valor *")
-        @Html.TextBoxFor(model => model.Valor, new { @class = "form-control", required = "required", @readonly = "readonly", @Value = ViewBag.Tratamento.Valor })
-    </div>
-    <div class="col-3">
         @Html.LabelFor(model => model.Descricao, "Status *") <br />
 
         @if (ViewBag.Tratamento.Status == "A")

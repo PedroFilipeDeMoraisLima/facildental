@@ -34,6 +34,9 @@
                         </a>
                         <ul class="collapse list-unstyled" id="cadastros">
                             <li>
+                                @Html.ActionLink("Convênio", "Index", "Convenio")
+                            </li>
+                            <li>
                                 @Html.ActionLink("Medicamento", "Index", "Medicamento")
                             </li>
                             <li>
@@ -84,7 +87,7 @@
             });
         </script>
 
-        @RenderSection("Scripts", false);
+        @RenderSection("Scripts", false)
 
     </body>
 </html>

@@ -1,0 +1,234 @@
+﻿@model gestaoclinica.Models.Convenio
+
+@using (Html.BeginForm("Index", "Convenio", FormMethod.Get))
+{
+    if (TempData["MsgSucesso"] != null)
+    {
+        <div class="alert alert-success">
+            <a href="#" class="close" data-dismiss="alert">×</a>
+            @TempData["MsgSucesso"]
+        </div>
+    }
+
+    if ((ViewData.ModelState.Any(x => x.Value.Errors.Any())) || (TempData["MsgErro"] != null))
+    {
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert">×</a>
+            <h6>Ops! Aconteceu algo de errado...</h6>
+            @Html.ValidationSummary()
+            @TempData["MsgErro"]
+        </div>
+    }
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a href="#">Cadastros</a></li>
+            <li class="breadcrumb-item" aria-current="page">@Html.ActionLink("Convênio", "Index", "Convenio")</li>
+            <li class="breadcrumb-item active"><a href="#">Gerenciamento</a></li>
+        </ol>
+    </nav>
+
+
+    <button type="button" class="btn btn-primary btn-sm" id="btnCadastroConvenio"><i class="fas fa-plus"></i>&nbsp;Novo Cadastro</button>
+    <button type="button" class="btn btn-secondary btn-sm"><i class="fas fa-file"></i>&nbsp;Relatório</button>
+
+    <br /> <br />
+
+    <div class="row">
+        <div class="col-12">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1"><i class="fas fa-search"></i></span>
+                </div>
+                <input type="text" id="pesquisa" name="pesquisa" class="form-control" placeholder="Digite um nome de convênio para pesquisar">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-secondary btn-sm">Pesquisar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="table-responsive table-sm">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">#</th>
+                    <th scope="col">Descrição</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (gestaoclinica.Models.Convenio Convenio in ViewBag.Convenios)
+                    {
+                        <tr>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-outline-primary detalhe" id="btnEdicao" title="Editar" value=@Convenio.Codigo><i class="fas fa-edit"></i></button>
+                                    <button type="button" class="btn btn-outline-danger exclusao" title="Excluir" value=@Convenio.Codigo><i class="fas fa-trash"></i></button>
+                                </div>
+                            </td>
+                            <th scope="row">@Convenio.Codigo.ToString()</th>
+                            <td>@Convenio.Descricao</td>
+                            <td>@Convenio.Status</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+}
+
+<div class="modal" id="cadastroConvenio" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cadastro de Medicamento</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            @using (Html.BeginForm("Cadastrar", "Convenio", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken();
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            @Html.LabelFor(model => model.Descricao)
+                            @Html.TextBoxFor(model => model.Descricao, new { @class = "form-control", required = "required" })
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="edicaoConvenio" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edição do Convênio</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            @using (Html.BeginForm("Atualizar", "Convenio", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken();
+
+                <div class="modal-body" id="modal-body-edicao">
+                    <div class="row">
+                        <div class="col-2">
+                            @Html.LabelFor(model => model.Codigo)
+                            @Html.TextBoxFor(model => model.Codigo, new { @class = "form-control", required = "required", @readonly = "readonly" })
+                        </div>
+                        <div class="col-6">
+                            @Html.LabelFor(model => model.Descricao)
+                            @Html.TextBoxFor(model => model.Descricao, new { @class = "form-control", required = "required" })
+                        </div>
+                        <div class="col-4">
+                            @Html.LabelFor(model => model.Status) <br />
+                            <label>Ativo</label> @Html.RadioButtonFor(model => model.Status, "A", new { @id = "Status_A" })
+                            <label>Inativo</label> @Html.RadioButtonFor(model => model.Status, "I", new { @id = "Status_I" })
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Atualizar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="exclusaoConvenio" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Exclusão do Convênio</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            @using (Html.BeginForm("Excluir", "Convenio", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken();
+
+                <div class="modal-body" id="modal-body-exclusao">
+                    <label>Deseja realmente excluir este convênio?</label>
+                    @Html.HiddenFor(model => model.Codigo)
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Excluir</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+
+        $().ready(function () {
+
+            $("#btnCadastroConvenio").click(function (e) {
+
+                $("#cadastroConvenio").modal('show');
+
+            })
+
+            $(".detalhe").click(function () {
+                var id = $(this).val();
+
+                $.ajax({
+                    url: '/Convenio/ObterConvenioJson',
+                    data: { Codigo: id },
+                    dataType: 'json',
+                    success: function (data) {
+                        $("#modal-body-edicao #Codigo").val(data.Codigo);
+                        $("#modal-body-edicao #Descricao").val(data.Descricao);
+
+                        console.log(data.Status);
+
+                        if (data.Status == "Ativo") {
+                            $("#modal-body-edicao #Status_A").prop("checked", true);
+                        } else {
+                            $("#modal-body-edicao #Status_I").prop("checked", true);
+                        }
+                    }
+                })
+
+                $("#edicaoConvenio").modal('show');
+            })
+
+            $(".exclusao").click(function () {
+                $("#modal-body-exclusao #Codigo").val($(this).val());
+
+                $("#exclusaoConvenio").modal('show');
+            })
+        })
+
+    </script>
+}
+
+
+
+
+
+
+

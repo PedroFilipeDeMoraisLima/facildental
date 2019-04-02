@@ -1,5 +1,21 @@
 ﻿@using (Html.BeginForm("Index", "Prontuario"))
 {
+    if (TempData["MsgSucesso"] != null)
+    {
+        <div class="alert alert-success">
+            <a href="#" class="close" data-dismiss="alert">×</a>
+            @TempData["MsgSucesso"]
+        </div>
+    }
+
+    if (TempData["MsgErro"] != null)
+    {
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert">×</a>
+            @TempData["MsgErro"]
+        </div>
+    }
+
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb small">
             <li class="breadcrumb-item"><a href="#">PEP</a></li>
@@ -7,7 +23,10 @@
         </ol>
     </nav>
 
-    <br />
+    <button type="button" class="btn btn-primary btn-sm" onclick="location.href='@Url.Action("Cadastro", "Paciente")'"><i class="fas fa-plus"></i>&nbsp;Novo Paciente</button>
+    <button type="button" class="btn btn-secondary btn-sm"><i class="fas fa-file"></i>&nbsp;Relatório</button>
+
+    <br /> <br />
 
     <div class="row">
         <div class="col-12">
